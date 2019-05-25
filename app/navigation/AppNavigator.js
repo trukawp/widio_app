@@ -104,9 +104,10 @@ const SignThingsStack = createSwitchNavigator({
   SignIn: SignInScreen,
   SignUp: SignUpScreen,
   TabNavigator: TabNavigator,
+  AuthLoading: { screen: AuthLoadingScreen },
   },
   {
-    initialRouteName: 'SignIn'
+    initialRouteName: 'AuthLoading'
   }
 );
 

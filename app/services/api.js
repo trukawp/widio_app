@@ -1,5 +1,13 @@
 import axios from '../config/axios';
 
+// TODO: Validate api paths
+export const auth = {
+  signIn: (params) =>
+    axios.post('/signin', params),
+  signUp: (params) =>
+    axios.post('/signup', params),
+};
+
 export const movie = {
   all: () => (
     axios.get('/movie/get/all')
