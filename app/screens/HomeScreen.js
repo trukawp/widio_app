@@ -7,9 +7,12 @@ import SwipeCards from '../components/SwipeCards/SwipeCards.js'
 
 
 export default class HomeScreen extends React.Component {
-  // static navigationOptions = {
-  //   header: null,
-  // };
+  static navigationOptions = {
+    headerStyle: {
+      backgroundColor: '#343E7A',
+      color: '#fff'
+    },
+  }
 
   constructor(props) {
     super(props);

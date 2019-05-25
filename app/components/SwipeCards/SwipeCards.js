@@ -35,8 +35,10 @@ export default class App extends React.Component {
     console.log("NIE")
   }
 
+  renderCard = (data) => <Card {...data} />
+
   handlOnClick (card) {
-    alert('Bziuum.')
+
   }
 
   render() {
@@ -45,12 +47,12 @@ export default class App extends React.Component {
         <SwipeCards
           cards={this.state.cards}
           loop={true}
-          renderCard={(cardData) => <Card {...cardData} />}
+          renderCard={this.renderCard}
           // renderNoMoreCards={() => <NoMoreCards />}
           showYup={true}
           showNope={true}
-          yupText='Kwadracik'
-          nopeText='Kwadracik'
+          yupText='+'
+          nopeText='-'
           handleYup={this.handleYup}
           handleNope={this.handleNope}
           key={this.state.cards.id}
@@ -68,21 +70,25 @@ export default class App extends React.Component {
 
 const styles = StyleSheet.create({
   yup: {
-    backgroundColor: '#00FF7F',
     marginRight: 5,
-    borderWidth: 0,
+    borderWidth: 2,
+    borderRadius: 10,
+    padding: 10,
   },
   nope: {
-    backgroundColor: '#DC143C',
     marginLeft: 5,
-    borderWidth: 0,
+    borderWidth: 2,
+    borderRadius: 10,
+    padding: 12,
   },
   yuptxt: {
-    color: '#00FF7F',
+    color: 'black',
     fontWeight: 'bold',
+    fontSize: 30,
   },
   nopetxt: {
-    color: '#DC143C',
+    color: 'black',
     fontWeight: 'bold',
+    fontSize: 30,
   },
 });

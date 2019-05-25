@@ -1,12 +1,14 @@
 import React from 'react';
 import { ScrollView,StyleSheet,View } from 'react-native';
 import { Card,Button,Text } from "react-native-elements";
-import { onSignOut } from "../auth";
 
 export default class ProfileScreen extends React.Component {
-  // static navigationOptions = {
-  //   header: null,
-  // };
+  static navigationOptions = {
+    headerStyle: {
+      backgroundColor: '#343E7A',
+      color: '#fff'
+    },
+  }
 
   constructor(props) {
     super(props);
@@ -37,7 +39,7 @@ export default class ProfileScreen extends React.Component {
           <Button
             backgroundColor="#03A9F4"
             title="SIGN OUT"
-            onPress={() => onSignOut().then(() => navigate("Home"))}
+            onPress={() => navigate("SignIn")}
           />
         </Card>
       </View>

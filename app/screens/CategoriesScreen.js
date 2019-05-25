@@ -5,9 +5,12 @@ import { category } from '../services/api';
 import CategoryCards from '../components/CategoryCards/CategoryCards.js'
 
 export default class CategoriesScreen extends React.Component {
-  // static navigationOptions = {
-  //   header: null,
-  // };
+  static navigationOptions = {
+    headerStyle: {
+      backgroundColor: '#343E7A',
+      color: '#fff'
+    },
+  }
 
   constructor(props) {
     super(props);

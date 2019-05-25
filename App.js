@@ -9,7 +9,7 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
         <AppNavigator />
       </View>
     );

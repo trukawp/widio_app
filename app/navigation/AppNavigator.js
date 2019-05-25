@@ -106,7 +106,7 @@ const SignThingsStack = createSwitchNavigator({
   TabNavigator: TabNavigator,
   },
   {
-    initialRouteName: 'SignUp'
+    initialRouteName: 'SignIn'
   }
 );
 

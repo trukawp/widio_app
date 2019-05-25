@@ -5,16 +5,19 @@ import { kid } from '../services/api';
 import ListCards from '../components/ListCards/ListCards.js'
 
 export default class MoviesWatchedScreen extends React.Component {
-  // static navigationOptions = {
-  //   header: null,
-  // };
+  static navigationOptions = {
+    headerStyle: {
+      backgroundColor: '#343E7A',
+      color: '#fff'
+    },
+  }
 
   constructor(props) {
     super(props);
 
     this.state = {
       movies: [],
-      kid: '4e8f6036-6ae9-4a3e-bdf9-949776b518f9',
+      kid: '98452c21-9d89-4808-9ab6-38c3dd58f410',
     };
   }
 
