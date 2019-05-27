@@ -10,6 +10,9 @@ import MoviesWatchedScreen from '../screens/MoviesWatchedScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
+import CategoryHomeScreen from '../screens/CategoryHomeScreen';
+import AuthLoading from '../containers/AuthLoading/AuthLoading';
+import MovieScreen from '../screens/MovieScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -31,6 +34,7 @@ HomeStack.navigationOptions = {
 
 const CategoriesStack = createStackNavigator({
   Categories: CategoriesScreen,
+  CategoryHome: CategoryHomeScreen,
 });
 
 CategoriesStack.navigationOptions = {
@@ -46,6 +50,7 @@ CategoriesStack.navigationOptions = {
 
 const MoviesChosenStack = createStackNavigator({
   MoviesChosen: MoviesChosenScreen,
+  Movie: MovieScreen,
 });
 
 MoviesChosenStack.navigationOptions = {
@@ -53,7 +58,7 @@ MoviesChosenStack.navigationOptions = {
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-heart-half' : 'md-link'}
+      name={Platform.OS === 'ios' ? 'ios-heart' : 'md-link'}
     />
   ),
 };
@@ -93,7 +98,6 @@ const TabNavigator = createBottomTabNavigator(
     MovieChosen: MoviesChosenStack,
     MoviesWatched: MoviesWatchedStack,
     Profile: ProfileStack,
-    // Settings: SettingsStack,
   },
   {
     initialRouteName: 'Home'
@@ -104,14 +108,14 @@ const SignThingsStack = createSwitchNavigator({
   SignIn: SignInScreen,
   SignUp: SignUpScreen,
   TabNavigator: TabNavigator,
-  AuthLoading: { screen: AuthLoadingScreen },
+  AuthLoading: { screen: AuthLoading },
   },
   {
     initialRouteName: 'AuthLoading'
   }
 );
 
-const AppContainer = createAppContainer(SignThingsStack);
+const AppContainer = createAppContainer(TabNavigator);
 
 export default class App extends React.Component {
   render() {

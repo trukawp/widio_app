@@ -3,9 +3,9 @@ import axios from '../config/axios';
 // TODO: Validate api paths
 export const auth = {
   signIn: (params) =>
-    axios.post('/signin', params),
+    axios.post('/user/login', params),
   signUp: (params) =>
-    axios.post('/signup', params),
+    axios.post('/user/register', params),
 };
 
 export const movie = {
@@ -17,9 +17,18 @@ export const movie = {
   )
 };
 
+export const movieChosen = {
+  update: (data) => (
+      axios.post('/movie_chosen/update', data)
+  ),
+};
+
 export const category = {
   all: () => (
     axios.get('/category/get/all')
+  ),
+  getCategoryMovies: (id) => (
+    axios.get(`/category/${id}/category_movies`)
   ),
 };
 

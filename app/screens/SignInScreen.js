@@ -4,7 +4,7 @@ import { Card, Button, Input, Text } from 'react-native-elements';
 import { withFormik } from 'formik';
 import * as yup from 'yup';
 
-import { auth } from 'services/api';
+import { auth } from '../services/api';
 
 class SignInScreen extends React.Component {
   // static navigationOptions = {
@@ -18,10 +18,14 @@ class SignInScreen extends React.Component {
     };
   }
 
-  render() {
-    const { handleChange, handleSubmit, errors, touched, values } = this.props;
-    const {navigate} = this.props.navigation;
+  onChangeText = (name) => (text) => {
+    this.props.setFieldValue(name, text);
+  }
 
+  render() {
+    const { handleChange, handleSubmit, errors, values } = this.props;
+    const {navigate} = this.props.navigation;
+    
     return (
       <ScrollView style={styles.container}>
         <View style={styles.container2}>
@@ -32,25 +36,22 @@ class SignInScreen extends React.Component {
             />
           </View>
           <Card>
-            {
-              errors.message && <Text style={styles.error}>
-                {errors.message}
-              </Text>
-            }
+            {errors.message && <Text style={styles.error}>{errors.message}</Text>}
             <Text>Email</Text>
             <Input
               name="email"
-              errorMessage={touched.email && errors.email}
+              errorMessage={errors.email}
               value={values.email}
-              onChange={handleChange}
+              onChangeText={this.onChangeText("email")}
               placeholder="Email address..."
+              autoCapitalize="none"
             />
             <Text>Hasło</Text>
             <Input
               name="password"
-              errorMessage={touched.email && errors.email}
+              errorMessage={errors.password}
               value={values.password}
-              onChange={handleChange}
+              onChangeText={this.onChangeText("password")}
               secureTextEntry
               placeholder="Hasło..."
             />
@@ -75,13 +76,18 @@ class SignInScreen extends React.Component {
 
 export default withFormik({
   handleSubmit: async (values) => {
+    console.log('in')
     try {
       const params = {
         email: values.email,
         password: values.password,
       };
 
-      const { data } = await auth.signIn(params);
+      console.log('email', email)
+      // console.log('email' values.email)
+
+      const data = await auth.signIn(params);
+      console.log('data', data)
 
       // TODO: set proper path to auth_token
       await AsyncStorage.saveItem('token', data.payload.auth_token);
@@ -92,7 +98,6 @@ export default withFormik({
           message: error.errors.message,
         });
       }
-      setSubmitting(false);
     }
   },
   validationSchema: yup.object().shape({

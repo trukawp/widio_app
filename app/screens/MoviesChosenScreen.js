@@ -1,14 +1,21 @@
 import React from 'react';
-import { ScrollView,StyleSheet,Text,View } from 'react-native';
+import { ScrollView,StyleSheet,Text,View,TouchableOpacity,ImageBackground } from 'react-native';
 
 import { kid } from '../services/api';
-import ListCards from '../components/ListCards/ListCards.js'
+import ListCards from '../components/ListCards/ListCards.js';
+import HeaderIcon from '../components/HeaderIcon';
 
 export default class MoviesChosenScreen extends React.Component {
   static navigationOptions = {
     headerStyle: {
       backgroundColor: '#343E7A',
-      color: '#fff'
+    },
+    headerRight: <HeaderIcon name='ios-lock' />,
+    title: 'Widio',
+    headerTintColor: '#FAE99E',
+    headerTitleStyle: {
+      fontFamily: 'lilitaone-regular',
+      fontSize: 25,
     },
   }
 
@@ -17,7 +24,7 @@ export default class MoviesChosenScreen extends React.Component {
 
     this.state = {
       movies: [],
-      kid: '98452c21-9d89-4808-9ab6-38c3dd58f410',
+      kid: '7713b48e-e01a-4c39-9861-059e51a2b20a',
     };
   }
 
@@ -35,15 +42,23 @@ export default class MoviesChosenScreen extends React.Component {
     return this.state.kid;
   }
 
+  _onPressButton = (movieId, movieTitle) => {
+    this.props.navigation.navigate("Movie", {movieId: movieId, movieTitle: movieTitle})
+  }
+
   render() {
     return (
+      <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
       <ScrollView style={styles.container}>
         <View style={styles.box}>
           {this.state.movies.map(movie => 
-            <ListCards key={movie.movie.id} name={movie.movie.title} imgURL={movie.movie.imgURL} />
+            <TouchableOpacity onPress={this._onPressButton.bind(this, movie.movie.id, movie.movie.title)} key={movie.movie.id}>
+            <ListCards name={movie.movie.title} imgURL={movie.movie.imgURL} />
+            </TouchableOpacity>
           )}
         </View>
       </ScrollView>
+      </ImageBackground>
     );
   }
 }
@@ -51,7 +66,6 @@ export default class MoviesChosenScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 15,
-    // backgroundColor: '#343E7A',
   },
   box: {
     flex: 1,
@@ -62,4 +76,10 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     paddingLeft: 20,
   },
+  backgroundImage: {
+    flex: 1,
+    // remove width and height to override fixed static size
+    width: null,
+    height: null,
+  }
 });

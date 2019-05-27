@@ -4,9 +4,8 @@ import {
   AsyncStorage,
   StatusBar,
   View,
+  StyleSheet,
 } from 'react-native';
-
-import styles from './styles';
 
 class AuthLoadingScreen extends React.PureComponent {
   componentDidMount() {
@@ -27,5 +26,14 @@ class AuthLoadingScreen extends React.PureComponent {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    // backgroundColor: '#343E7A',
+  },
+});
 
 export default AuthLoadingScreen;

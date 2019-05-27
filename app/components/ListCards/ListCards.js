@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     overflow: 'hidden',
     borderColor: 'grey',
-    margin: 10,
+    margin: 5,
   },
   thumbnail: {
     width: 143,

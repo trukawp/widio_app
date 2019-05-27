@@ -1,8 +1,10 @@
 import React from 'react';
 import { ScrollView,StyleSheet,View,Image } from 'react-native';
 import { Card,Button,Input,Text } from "react-native-elements";
+import { withFormik } from 'formik';
+import * as yup from 'yup';
 
-// import SignInScreen from './SignInScreen';
+import { auth } from '../services/api';
 
 class SignUpScreen extends React.Component {
   // static navigationOptions = {
@@ -14,6 +16,10 @@ class SignUpScreen extends React.Component {
 
     this.state = {
     };
+  }
+
+  onChangeText = (name) => (text) => {
+    this.props.setFieldValue(name, text);
   }
 
   render() {
@@ -38,26 +44,27 @@ class SignUpScreen extends React.Component {
             <Text>Email</Text>
             <Input
               name="email"
-              errorMessage={touched.email && errors.email}
+              errorMessage={errors.email}
               value={values.email}
-              onChange={handleChange}
+              onChangeText={this.onChangeText("email")}
               placeholder="Email address..."
+              autoCapitalize="none"
             />
             <Text>Hasło</Text>
             <Input
               name="password"
-              errorMessage={touched.email && errors.email}
+              errorMessage={errors.password}
               value={values.password}
-              onChange={handleChange}
+              onChangeText={this.onChangeText("password")}
               secureTextEntry
               placeholder="Hasło..."
             />
             <Text>Potwierdź hasło</Text>
             <Input
               name="password_confirmation"
-              errorMessage={touched.email && errors.email}
+              errorMessage={errors.password_confirmation}
               value={values.password_confirmation}
-              onChange={handleChange}
+              onChangeText={this.onChangeText("password_confirmation")}
               secureTextEntry
               placeholder="Potwierdz hasło..."
             />
@@ -109,7 +116,7 @@ export default withFormik({
     email: yup.string().required('Email jest wymagany'),
     password: yup.string().required('Hasło jest wymagane'),
     passoword_confirmation: yup.string()
-      .oneOf([Yup.ref('password'), null], 'Hasła musza być takie same')
+      .oneOf([yup.ref('password'), null], 'Hasła musza być takie same')
       .required('Potwiedzenie hasła jest wymagane'),
   }),
 })(SignUpScreen);

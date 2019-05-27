@@ -1,14 +1,21 @@
 import React from 'react';
-import { ScrollView,StyleSheet,Text,View } from 'react-native';
+import { ScrollView,StyleSheet,Text,View,TouchableOpacity,ImageBackground } from 'react-native';
 
 import { category } from '../services/api';
-import CategoryCards from '../components/CategoryCards/CategoryCards.js'
+import CategoryCards from '../components/CategoryCards/CategoryCards.js';
+import HeaderIcon from '../components/HeaderIcon';
 
 export default class CategoriesScreen extends React.Component {
   static navigationOptions = {
     headerStyle: {
       backgroundColor: '#343E7A',
-      color: '#fff'
+    },
+    headerRight: <HeaderIcon name='ios-lock' />,
+    title: 'Widio',
+    headerTintColor: '#FAE99E',
+    headerTitleStyle: {
+      fontFamily: 'lilitaone-regular',
+      fontSize: 25,
     },
   }
 
@@ -30,15 +37,23 @@ export default class CategoriesScreen extends React.Component {
       })
   }
 
+  _onPressButton (categoryId, categoryName) {
+    this.props.navigation.navigate('CategoryHome', {categoryId: categoryId, categoryName: categoryName})
+  }
+
   render() {
     return (
+      <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
       <ScrollView style={styles.container}>
         <View style={styles.box}>
-          {this.state.categories.map(category => 
-            <CategoryCards key={category.id} name={category.name} imgURL={category.imgURL} />
+          {this.state.categories.map(category =>
+         <TouchableOpacity onPress={this._onPressButton.bind(this, category.id, category.name)} key={category.id}>
+            <CategoryCards name={category.name} imgURL={category.imgURL} />
+          </TouchableOpacity>
           )}
         </View>
       </ScrollView>
+      </ImageBackground>
     );
   }
 }
@@ -46,7 +61,6 @@ export default class CategoriesScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 15,
-    // backgroundColor: '#343E7A',
   },
   box: {
     flex: 1,
@@ -55,4 +69,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     flexWrap: 'wrap',
   },
+  backgroundImage: {
+    flex: 1,
+    // remove width and height to override fixed static size
+    width: null,
+    height: null,
+  }
 });
