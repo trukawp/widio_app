@@ -42,7 +42,11 @@ export default class App extends React.Component {
   renderCard = (data) => <Card {...data} />
 
   handlOnClick (card) {
+    console.log('Click!')
+  }
 
+  navigateToMovie (navigation) {
+    navigation.navigate("Movie")
   }
 
   render() {
@@ -60,7 +64,7 @@ export default class App extends React.Component {
           yupStyle={styles.yup}
           noView={<Image source={require('../../assets/images/rejects.png')} style={{ width: 100, height: 100  }}/>}
           nopeStyle={styles.nope}
-          onClickHandler={this.handlOnClick}
+          onClickHandler={this.navigateToMovie.bind(this, this.props.navigation)}
         />
       </View>
     )

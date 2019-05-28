@@ -27,7 +27,7 @@ export default class CategoriesScreen extends React.Component {
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     category.all()
       .then(response => {
         this.setState({

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView,StyleSheet,Text,View,ImageBackground } from 'react-native';
+import { ScrollView,StyleSheet,Text,View,ImageBackground,TouchableOpacity } from 'react-native';
 import { Rating } from 'react-native-ratings';
 
 import { kid } from '../services/api';
@@ -25,7 +25,7 @@ export default class MoviesWatchedScreen extends React.Component {
 
     this.state = {
       movies: [],
-      kid: '7713b48e-e01a-4c39-9861-059e51a2b20a',
+      kid: '35d430bd-4745-4789-8743-64d3bb8d5bfb',
       starCount: 3.5,
     };
   }
@@ -48,14 +48,20 @@ export default class MoviesWatchedScreen extends React.Component {
     return this.state.kid;
   }
 
+  _onPressButton = () => {
+    this.props.navigation.navigate("Movie")
+  }
+
   render() {
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
       <ScrollView style={styles.container}>
         <View style={styles.cardwrapper}>
           {this.state.movies.map(movie =>
-          <View key={movie.movie.id} style={{}}> 
+          <View key={movie.movie.id} style={{}}>
+            <TouchableOpacity onPress={this._onPressButton}> 
             <ListCards name={movie.movie.title} imgURL={movie.movie.imgURL} />
+            </TouchableOpacity>
             <Text style={{ alignSelf: 'center' }}>Ocena:</Text>
             <Rating
               startingValue={movie.vote}
@@ -95,7 +101,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 5,
     borderColor: 'grey',
-    borderWidth: 1,
+    borderWidth: 0,
   },
   backgroundImage: {
     flex: 1,

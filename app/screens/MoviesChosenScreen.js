@@ -24,7 +24,7 @@ export default class MoviesChosenScreen extends React.Component {
 
     this.state = {
       movies: [],
-      kid: '7713b48e-e01a-4c39-9861-059e51a2b20a',
+      kid: '35d430bd-4745-4789-8743-64d3bb8d5bfb',
     };
   }
 

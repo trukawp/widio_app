@@ -27,8 +27,8 @@ export default class MovieScreen extends React.Component {
     const {navigate} = this.props.navigation;
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
-      <View style={styles.container}>
-      </View>
+        <View style={styles.container}>
+        </View>
       </ImageBackground>
     );
   }

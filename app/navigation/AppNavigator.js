@@ -16,6 +16,7 @@ import MovieScreen from '../screens/MovieScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
+  Movie: MovieScreen
 });
 
 HomeStack.navigationOptions = {
@@ -35,6 +36,7 @@ HomeStack.navigationOptions = {
 const CategoriesStack = createStackNavigator({
   Categories: CategoriesScreen,
   CategoryHome: CategoryHomeScreen,
+  Movie: MovieScreen
 });
 
 CategoriesStack.navigationOptions = {
@@ -65,6 +67,7 @@ MoviesChosenStack.navigationOptions = {
 
 const MoviesWatchedStack = createStackNavigator({
   MoviesWatched: MoviesWatchedScreen,
+  Movie: MovieScreen
 });
 
 MoviesWatchedStack.navigationOptions = {

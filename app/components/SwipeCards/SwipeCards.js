@@ -13,8 +13,8 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       cards: [],
-      kidId: '7713b48e-e01a-4c39-9861-059e51a2b20a',
-      movieId: '232efab3-816c-4f38-91ae-7dc72b7f50d0',
+      kidId: '35d430bd-4745-4789-8743-64d3bb8d5bfb',
+      movieId: '504c1847-88fe-46e4-a508-caafbde03d59',
       form: {
         movie:{},
         kid:{},
@@ -24,7 +24,7 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    Promise.all([movie.all(),movie.get(this.state.movieId),kid.get(this.state.kidId)])
+    Promise.all([movie.all(),movie.get(this.movieId),kid.get(this.kidId)])
       .then(([responseMs,responseM,responseK]) =>
         this.setState({
           cards: responseMs.data,
@@ -32,10 +32,19 @@ export default class App extends React.Component {
             movie: responseM.data,
             kid: responseK.data,
             watched: false,
-          },
+          }
         })
       )
   }
+
+  //    movie.all()
+  //     .then(response => {
+  //       this.setState({
+  //         ...this.state,
+  //         cards: response.data
+  //       })
+  //     })
+  // }
 
   get kidId() {
     return this.state.kidId;
@@ -62,13 +71,18 @@ export default class App extends React.Component {
   //   }});
   // }
 
- 
-
   renderCard = (data) => {
     return <Card {...data} />
   }
 
   handlOnClick (card) {
+    // this.props.navigation.navigate("Movie")
+    console.log('Click!')
+    this.navigateToMovie()
+  }
+
+  navigateToMovie (navigation) {
+    navigation.navigate("Movie")
   }
 
   // onHandleClick = () => {
@@ -82,8 +96,9 @@ export default class App extends React.Component {
   //       alert("Nie można dodać filmu.")
   //     });
   // }
-  
+
   render() {
+    console.log(this.state.cards)
     return (
       <View>
         <SwipeCards
@@ -98,7 +113,7 @@ export default class App extends React.Component {
           yupStyle={styles.yup}
           noView={<Image source={require('../../assets/images/rejects.png')} style={{ width: 100, height: 100  }}/>}
           nopeStyle={styles.nope}
-          onClickHandler={this.handlOnClick}
+          onClickHandler={this.navigateToMovie.bind(this, this.props.navigation)}
           smoothTransition={false}
         />
       </View>

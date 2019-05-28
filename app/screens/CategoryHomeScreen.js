@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView,StyleSheet,Text,View,Button,ImageBackground } from 'react-native';
+import { ScrollView,StyleSheet,Text,View,Button,ImageBackground,TouchableOpacity } from 'react-native';
 import { WebBrowser } from 'expo';
 
 import { movie } from '../services/api';
@@ -48,12 +48,16 @@ export default class CategoryHomeScreen extends React.Component {
     return params.categoryName;
   }
 
+  _onPressButton = () => {
+    this.props.navigation.navigate("Movie")
+  }
+
   render() {
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <CategorySwipeCards categoryId={this.categoryId} style={{flex: 1}} />
+          <CategorySwipeCards categoryId={this.categoryId} style={{flex: 1}} navigation={this.props.navigation} />
         </ScrollView>
       </View>
       </ImageBackground>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView,StyleSheet,Text,View,ImageBackground,Button } from 'react-native';
+import { ScrollView,StyleSheet,Text,View,ImageBackground,Button,TouchableOpacity } from 'react-native';
 import { WebBrowser } from 'expo';
 
 import { movie,movieChosen,kid } from '../services/api';
@@ -69,12 +69,17 @@ export default class HomeScreen extends React.Component {
   //     });
   // }
 
+  _onPressButton = () => {
+    this.props.navigation.navigate("Movie")
+  }
+
   render() {
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <SwipeCards style={{flex: 1}} />
+          <SwipeCards style={{flex: 1}} navigation={this.props.navigation} />
+          <Text></Text>
         </ScrollView>
       </View>
       </ImageBackground>
