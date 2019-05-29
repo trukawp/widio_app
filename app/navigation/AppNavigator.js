@@ -13,86 +13,97 @@ import SignUpScreen from '../screens/SignUpScreen';
 import CategoryHomeScreen from '../screens/CategoryHomeScreen';
 import AuthLoading from '../containers/AuthLoading/AuthLoading';
 import MovieScreen from '../screens/MovieScreen';
+import MovieVideoScreen from '../screens/MovieVideoScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
-  Movie: MovieScreen
+},{
+  navigationOptions: ({ navigation }) => ({
+    tabBarVisible: navigation.state.index < 1,
+    tabBarLabel: 'HOME',
+    tabBarIcon: ({ focused }) => (
+      <TabBarIcon
+        focused={focused}
+        name={
+          Platform.OS === 'ios'
+            ? `ios-home${focused ? '' : ''}`
+            : 'md-information-circle'
+        }
+        color='#2f95dc'
+      />
+    ),
+  }),
 });
 
-HomeStack.navigationOptions = {
-  tabBarLabel: 'HOME',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-home${focused ? '' : ''}`
-          : 'md-information-circle'
-      }
-    />
-  ),
-};
 
 const CategoriesStack = createStackNavigator({
   Categories: CategoriesScreen,
   CategoryHome: CategoryHomeScreen,
-  Movie: MovieScreen
+},{
+  navigationOptions: ({ navigation }) => ({
+    tabBarVisible: navigation.state.index < 1,
+    tabBarLabel: 'KATEGORIE',
+    tabBarIcon: ({ focused }) => (
+      <TabBarIcon
+        focused={focused}
+        name={Platform.OS === 'ios' ? 'ios-browsers' : 'md-link'}
+        color='#2f95dc'
+      />
+    ),
+  }),
 });
-
-CategoriesStack.navigationOptions = {
-  tabBarLabel: 'KATEGORIE',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-browsers' : 'md-link'}
-      onPress={this._onPressButton}
-    />
-  ),
-};
 
 const MoviesChosenStack = createStackNavigator({
   MoviesChosen: MoviesChosenScreen,
   Movie: MovieScreen,
+  MovieVideo: MovieVideoScreen,
+},{
+  navigationOptions: ({ navigation }) => ({
+    tabBarVisible: navigation.state.index < 1,
+    tabBarLabel: 'WYBRANE',
+    tabBarIcon: ({ focused }) => (
+      <TabBarIcon
+        focused={focused}
+        name={Platform.OS === 'ios' ? 'ios-heart' : 'md-link'}
+        color='#2f95dc'
+      />
+    ),
+  }),
 });
-
-MoviesChosenStack.navigationOptions = {
-  tabBarLabel: 'WYBRANE',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-heart' : 'md-link'}
-    />
-  ),
-};
 
 const MoviesWatchedStack = createStackNavigator({
   MoviesWatched: MoviesWatchedScreen,
-  Movie: MovieScreen
+  Movie: MovieScreen,
+  MovieVideo: MovieVideoScreen,
+},{
+  navigationOptions: ({ navigation }) => ({
+    tabBarVisible: navigation.state.index < 1,
+    tabBarLabel: 'OBEJRZANE',
+    tabBarIcon: ({ focused }) => (
+      <TabBarIcon
+        focused={focused}
+        name={Platform.OS === 'ios' ? 'ios-star' : 'md-link'}
+        color='#2f95dc'
+      />
+    ),
+  }),
 });
-
-MoviesWatchedStack.navigationOptions = {
-  tabBarLabel: 'OBEJRZANE',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-star' : 'md-link'}
-    />
-  ),
-};
 
 const ProfileStack = createStackNavigator({
   Profile: ProfileScreen,
+},{
+  navigationOptions: ({ navigation }) => ({
+    tabBarVisible: navigation.state.index < 1,
+    tabBarLabel: 'PROFIL',
+    tabBarIcon: ({ focused }) => (
+      <TabBarIcon
+        focused={focused}
+        name={Platform.OS === 'ios' ? 'ios-rocket' : 'md-link'}
+        color='#2f95dc'
+      />
+    ),
+  }),
 });
-
-ProfileStack.navigationOptions = {
-  tabBarLabel: 'PROFIL',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-rocket' : 'md-link'}
-    />
-  ),
-};
 
 const TabNavigator = createBottomTabNavigator(
   {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView,StyleSheet,Text,View,Button,ImageBackground,TouchableOpacity } from 'react-native';
+import { ScrollView,StyleSheet,Text,View,Button,ImageBackground,TouchableOpacity,StatusBar } from 'react-native';
 import { WebBrowser } from 'expo';
 
 import { movie } from '../services/api';
@@ -17,6 +17,9 @@ export default class CategoryHomeScreen extends React.Component {
       headerTitleStyle: {
         fontWeight: 'bold',
       },
+      headerBackTitleStyle: {
+        fontSize: 15,
+      }
     };
   };
 
@@ -24,18 +27,11 @@ export default class CategoryHomeScreen extends React.Component {
     super(props);
 
     this.state = {
-      movies: [],
     };
   }
 
-  componentDidMount() {
-    movie.all()
-      .then(response => {
-        this.setState({
-          ...this.state,
-          movies: response.data
-        })
-      })
+  componentWillMount() {
+    StatusBar.setHidden(false);
   }
 
   get categoryId() {
@@ -43,14 +39,10 @@ export default class CategoryHomeScreen extends React.Component {
     return params.categoryId;
   }
 
-  get categoryName() {
-    const { params } = this.props.navigation.state;
-    return params.categoryName;
-  }
-
-  _onPressButton = () => {
-    this.props.navigation.navigate("Movie")
-  }
+  // get categoryName() {
+  //   const { params } = this.props.navigation.state;
+  //   return params.categoryName;
+  // }
 
   render() {
     return (

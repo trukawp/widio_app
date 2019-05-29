@@ -1,6 +1,12 @@
 import React from 'react';
-import { ScrollView,StyleSheet,View,ImageBackground } from 'react-native';
-import { Card,Button,Text } from "react-native-elements";
+import { ScrollView,StyleSheet,View,ImageBackground,Dimensions,TouchableOpacity,Image,StatusBar } from 'react-native';
+import { Card,Button,Text } from 'react-native-elements';
+import { Video } from 'expo';
+import { movie } from '../services/api';
+
+import MovieIcon from '../components/MovieIcon';
+import VideoPlayer from '../components/VideoPlayer/VideoPlayer';
+import MovieImages from '../components/MovieImages/MovieImages';
 
 export default class MovieScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -12,7 +18,11 @@ export default class MovieScreen extends React.Component {
       headerTintColor: '#FAE99E',
       headerTitleStyle: {
         fontWeight: 'bold',
+        fontSize: 15,
       },
+      headerBackTitleStyle: {
+        fontSize: 15,
+      }
     };
   };
 
@@ -20,15 +30,54 @@ export default class MovieScreen extends React.Component {
     super(props);
 
     this.state = {
+      movie:{},
     };
   }
 
+  componentDidMount() {
+    movie.get(this.movieId)
+      .then(response => {
+        this.setState({
+          ...this.state,
+          movie: response.data
+        })
+      })
+  }
+
+  componentWillMount() {
+    this.showStatusBar();
+  }
+
+  get movieId() {
+    const { params } = this.props.navigation.state;
+    return params.movieId;
+  }
+
+  showStatusBar() {
+    StatusBar.setHidden(false);
+  }
+
+  renderVideo = () => {
+    this.props.navigation.navigate("MovieVideo", {showStatusBar: this.showStatusBar.bind(this) })
+  }
+
   render() {
-    const {navigate} = this.props.navigation;
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
+        <ScrollView>
         <View style={styles.container}>
+          <MovieImages />
         </View>
+        <View style={styles.buttons}>
+          <MovieIcon name='ios-heart-dislike' color='black' size={50} />
+          <TouchableOpacity onPress={this.renderVideo}>
+            <MovieIcon name='ios-play-circle' color='red' size={70} />
+          </TouchableOpacity>
+          <MovieIcon name='ios-star' color='gold' size={50} />
+        </View>
+          <Text style={{alignSelf: 'center', fontSize: 25, fontWeight: 'bold'}}>{this.state.movie.title}</Text>
+          <Text style={{margin: 10, textAlign: 'justify', fontSize: 20 }}>{this.state.movie.description}</Text>
+        </ScrollView>
       </ImageBackground>
     );
   }
@@ -37,8 +86,8 @@ export default class MovieScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    flexDirection: 'column',
+    // alignItems: 'flex-start',
+    // flexDirection: 'column',
     justifyContent: 'center',
   },
   backgroundImage: {
@@ -47,4 +96,10 @@ const styles = StyleSheet.create({
     width: null,
     height: null,
   },
+  buttons: {
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255,255,255,0.8)',
+  }
 });

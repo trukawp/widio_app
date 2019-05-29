@@ -25,14 +25,14 @@ export default class HomeScreen extends React.Component {
     super(props);
 
     this.state = {
-      movies: [],
-      kidId: 'a353934d-f13a-4029-bd0a-982952d1f34e',
-      movieId: '26478e59-0a4b-42b3-8df4-969605b11f65',
-      form: {
-        movie:{},
-        kid:{},
-        watched: true,
-      },
+      // movies: [],
+      // kidId: 'a353934d-f13a-4029-bd0a-982952d1f34e',
+      // movieId: '26478e59-0a4b-42b3-8df4-969605b11f65',
+      // form: {
+      //   movie:{},
+      //   kid:{},
+      //   watched: true,
+      // },
     };
   }
 
@@ -49,13 +49,13 @@ export default class HomeScreen extends React.Component {
   //     )
   // }
 
-  get kidId() {
-    return this.state.kidId;
-  }
+  // get kidId() {
+  //   return this.state.kidId;
+  // }
 
-  get movieId() {
-    return this.state.movieId;
-  }
+  // get movieId() {
+  //   return this.state.movieId;
+  // }
 
   // onHandleClick = () => {
   //   movieChosen.update(this.state.form)

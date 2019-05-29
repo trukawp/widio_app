@@ -31,23 +31,23 @@ export default class App extends React.Component {
     return this.props.categoryId;
   }
 
-  handleYup (card) {
-    console.log("Tak")
-  }
+  // handleYup (card) {
+  //   console.log("Tak")
+  // }
 
-  handleNope (card) {
-    console.log("Nie")
-  }
+  // handleNope (card) {
+  //   console.log("Nie")
+  // }
 
   renderCard = (data) => <Card {...data} />
 
-  handlOnClick (card) {
-    console.log('Click!')
+  handleOnClick (card) {
+
   }
 
-  navigateToMovie (navigation) {
-    navigation.navigate("Movie")
-  }
+  // navigateToMovie (navigation) {
+  //   navigation.navigate("Movie")
+  // }
 
   render() {
     return (
@@ -64,7 +64,8 @@ export default class App extends React.Component {
           yupStyle={styles.yup}
           noView={<Image source={require('../../assets/images/rejects.png')} style={{ width: 100, height: 100  }}/>}
           nopeStyle={styles.nope}
-          onClickHandler={this.navigateToMovie.bind(this, this.props.navigation)}
+          // onClickHandler={this.navigateToMovie.bind(this, this.props.navigation)}
+          onClickHandler={this.handleOnClick}
         />
       </View>
     )

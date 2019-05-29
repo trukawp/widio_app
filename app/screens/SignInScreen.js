@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Image, AsyncStorage } from 'react-native';
+import { ScrollView, StyleSheet, View, Image, AsyncStorage,StatusBar } from 'react-native';
 import { Card, Button, Input, Text } from 'react-native-elements';
 import { withFormik } from 'formik';
 import * as yup from 'yup';
@@ -16,6 +16,10 @@ class SignInScreen extends React.Component {
 
     this.state = {
     };
+  }
+
+  componentWillMount() {
+    StatusBar.setHidden(false);
   }
 
   onChangeText = (name) => (text) => {

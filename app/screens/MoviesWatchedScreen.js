@@ -25,7 +25,7 @@ export default class MoviesWatchedScreen extends React.Component {
 
     this.state = {
       movies: [],
-      kid: '35d430bd-4745-4789-8743-64d3bb8d5bfb',
+      kid: '33b226a1-28d7-43de-bcc3-b2e46d14d512',
       starCount: 3.5,
     };
   }
@@ -48,18 +48,18 @@ export default class MoviesWatchedScreen extends React.Component {
     return this.state.kid;
   }
 
-  _onPressButton = () => {
-    this.props.navigation.navigate("Movie")
+  _onPressButton = (movieId, movieTitle) => {
+    this.props.navigation.navigate("Movie", {movieId: movieId, movieTitle: movieTitle})
   }
 
   render() {
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
-      <ScrollView style={styles.container}>
-        <View style={styles.cardwrapper}>
+      <ScrollView>
+        <View style={styles.container}>
           {this.state.movies.map(movie =>
           <View key={movie.movie.id} style={{}}>
-            <TouchableOpacity onPress={this._onPressButton}> 
+            <TouchableOpacity onPress={this._onPressButton.bind(this, movie.movie.id, movie.movie.title)} key={movie.movie.id}>
             <ListCards name={movie.movie.title} imgURL={movie.movie.imgURL} />
             </TouchableOpacity>
             <Text style={{ alignSelf: 'center' }}>Ocena:</Text>
@@ -85,17 +85,13 @@ export default class MoviesWatchedScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 15,
-  },
-  cardwrapper: {
     flex: 1,
-    marginTop: 15,
+    marginTop: 10,
     flexDirection:'row', 
     justifyContent: 'space-between', 
     flexWrap: 'wrap',
     paddingRight: 20,
     paddingLeft: 20,
-    marginBottom: 50,
   },
   stars: {
     marginBottom: 10,

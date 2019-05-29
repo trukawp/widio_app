@@ -24,7 +24,7 @@ export default class MoviesChosenScreen extends React.Component {
 
     this.state = {
       movies: [],
-      kid: '35d430bd-4745-4789-8743-64d3bb8d5bfb',
+      kid: '33b226a1-28d7-43de-bcc3-b2e46d14d512',
     };
   }
 
@@ -42,15 +42,15 @@ export default class MoviesChosenScreen extends React.Component {
     return this.state.kid;
   }
 
-  _onPressButton = (movieId, movieTitle) => {
-    this.props.navigation.navigate("Movie", {movieId: movieId, movieTitle: movieTitle})
+  _onPressButton = (movieId, movieTitle, navigation) => {
+    this.props.navigation.navigate("Movie", {movieId: movieId, movieTitle: movieTitle, navigation: this.props.navigation})
   }
 
   render() {
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
-      <ScrollView style={styles.container}>
-        <View style={styles.box}>
+      <ScrollView>
+        <View style={styles.container}>
           {this.state.movies.map(movie => 
             <TouchableOpacity onPress={this._onPressButton.bind(this, movie.movie.id, movie.movie.title)} key={movie.movie.id}>
             <ListCards name={movie.movie.title} imgURL={movie.movie.imgURL} />
@@ -65,11 +65,8 @@ export default class MoviesChosenScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 15,
-  },
-  box: {
     flex: 1,
-    marginTop: 15,
+    marginTop: 10,
     flexDirection:'row', 
     justifyContent: 'space-between', 
     flexWrap: 'wrap',
