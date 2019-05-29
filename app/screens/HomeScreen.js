@@ -25,49 +25,9 @@ export default class HomeScreen extends React.Component {
     super(props);
 
     this.state = {
-      // movies: [],
-      // kidId: 'a353934d-f13a-4029-bd0a-982952d1f34e',
-      // movieId: '26478e59-0a4b-42b3-8df4-969605b11f65',
-      // form: {
-      //   movie:{},
-      //   kid:{},
-      //   watched: true,
-      // },
+
     };
   }
-
-  // componentDidMount() {
-  //   Promise.all([movie.all(),movie.get(this.state.movieId),kid.get(this.state.kidId)])
-  //     .then(([responseMs,responseM,responseK]) =>
-  //       this.setState({
-  //         form: {
-  //           movie: responseM.data,
-  //           kid: responseK.data,
-  //           watched: false,
-  //         },
-  //       })
-  //     )
-  // }
-
-  // get kidId() {
-  //   return this.state.kidId;
-  // }
-
-  // get movieId() {
-  //   return this.state.movieId;
-  // }
-
-  // onHandleClick = () => {
-  //   movieChosen.update(this.state.form)
-  //     .then(() => {
-  //       this.setState()
-  //     })
-  //     .catch(error => {
-  //       console.log(error.response)
-  //       console.log(this.state.form.movie.title, this.state.form.kid.name, this.state.form.watched)
-  //       alert("Nie można dodać filmu.")
-  //     });
-  // }
 
   _onPressButton = () => {
     this.props.navigation.navigate("Movie")

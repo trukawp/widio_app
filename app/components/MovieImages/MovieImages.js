@@ -9,9 +9,9 @@ export default class App extends Component {
     return (
       <View style={{ width: Dimensions.get('window').width, height: 277 }} showButtons={true}>
         <Swiper showsButtons={false}>
-          <Image style={styles.thumbnail} source={{uri: 'https://image.tmdb.org/t/p/original/6qVF0gnLnbKCgcMfCpCB8GH7B5I.jpg'}} />
-          <Image style={styles.thumbnail} source={{uri: 'https://image.tmdb.org/t/p/original/aUVCJ0HkcJIBrTJYPnTXta8h9Co.jpg'}} />
-          <Image style={styles.thumbnail} source={{uri: 'https://image.tmdb.org/t/p/original/7d6EY00g1c39SGZOoCJ5Py9nNth.jpg'}} />
+        { this.props.pictures.map(picture =>
+          <Image style={styles.thumbnail} source={{uri: picture.imgURL}} key={picture}/>
+        )}
         </Swiper>
       </View>
     );

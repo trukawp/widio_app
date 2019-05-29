@@ -31,6 +31,11 @@ export default class MovieScreen extends React.Component {
 
     this.state = {
       movie:{},
+      pictures: [
+       {imgURL: 'https://image.tmdb.org/t/p/original/aUVCJ0HkcJIBrTJYPnTXta8h9Co.jpg'},
+       {imgURL: 'https://image.tmdb.org/t/p/original/6qVF0gnLnbKCgcMfCpCB8GH7B5I.jpg'},
+       {imgURL: 'https://image.tmdb.org/t/p/original/7d6EY00g1c39SGZOoCJ5Py9nNth.jpg'},
+      ]
     };
   }
 
@@ -66,7 +71,7 @@ export default class MovieScreen extends React.Component {
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
         <ScrollView>
         <View style={styles.container}>
-          <MovieImages />
+          <MovieImages pictures={this.state.pictures} />
         </View>
         <View style={styles.buttons}>
           <MovieIcon name='ios-heart-dislike' color='black' size={50} />

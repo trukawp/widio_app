@@ -25,7 +25,7 @@ export default class MoviesWatchedScreen extends React.Component {
 
     this.state = {
       movies: [],
-      kid: '33b226a1-28d7-43de-bcc3-b2e46d14d512',
+      kid: 'fd106cc7-470c-42e3-a273-33910eff0d36',
       starCount: 3.5,
     };
   }

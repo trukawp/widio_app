@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView,StyleSheet,Text,View,TouchableOpacity,ImageBackground } from 'react-native';
+import { ScrollView,StyleSheet,Text,View,TouchableOpacity,ImageBackground,RefreshControl } from 'react-native';
 
 import { kid } from '../services/api';
 import ListCards from '../components/ListCards/ListCards.js';
@@ -24,7 +24,8 @@ export default class MoviesChosenScreen extends React.Component {
 
     this.state = {
       movies: [],
-      kid: '33b226a1-28d7-43de-bcc3-b2e46d14d512',
+      kid: 'fd106cc7-470c-42e3-a273-33910eff0d36',
+      refreshing: false,
     };
   }
 
@@ -34,6 +35,18 @@ export default class MoviesChosenScreen extends React.Component {
         this.setState({
           ...this.state,
           movies: response.data
+        })
+      })
+  }
+
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    kid.getKidChoices(this.kidId)
+      .then(response => {
+        this.setState({
+          ...this.state,
+          movies: response.data,
+          refreshing: false
         })
       })
   }
@@ -49,7 +62,7 @@ export default class MoviesChosenScreen extends React.Component {
   render() {
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
-      <ScrollView>
+      <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
         <View style={styles.container}>
           {this.state.movies.map(movie => 
             <TouchableOpacity onPress={this._onPressButton.bind(this, movie.movie.id, movie.movie.title)} key={movie.movie.id}>

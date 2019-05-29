@@ -12,26 +12,23 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      cards: [],
-      kidId: '33b226a1-28d7-43de-bcc3-b2e46d14d512',
-      movieId: '087e9885-c0ba-4cfd-a529-147fdf3287c3',
+      movies: [],
+      kidId: 'fd106cc7-470c-42e3-a273-33910eff0d36',
       form: {
         movie:{},
         kid:{},
-        watched: true,
+        watched: false,
       },
     };
   }
 
   componentDidMount() {
-    Promise.all([movie.all(),movie.get(this.movieId),kid.get(this.kidId)])
-      .then(([responseMs,responseM,responseK]) =>
+    Promise.all([movie.all(),kid.get(this.kidId)])
+      .then(([responseM,responseK]) =>
         this.setState({
-          cards: responseMs.data,
+          movies: responseM.data,
           form: {
-            movie: responseM.data,
             kid: responseK.data,
-            watched: false,
           }
         })
       )
@@ -50,32 +47,34 @@ export default class App extends React.Component {
     return this.state.kidId;
   }
 
-  get movieId() {
-    return this.state.movieId;
+  handleYup (kid, watched, movie) {
+    return this.setState({ form: {
+        ...this.state.form,
+        kid: kid,
+        watched: watched,
+        movie: movie,
+    }}, () => {
+      this.handleOnSwipe();
+      }
+    );
   }
-
-  // handleYup (card) {
-  //   console.log('Tak')
-  // }
-
-  // handleNope (card) {
-  //   console.log('Nie')
-  // }
-
-  // movieChange (card, kid, watched) {
-  //   return this.setState({ form: {
-  //       ...this.state.form,
-  //       movie: card,
-  //       kid: kid,
-  //       watched: watched,
-  //   }});
-  // }
 
   renderCard = (data) => {
     return <Card {...data} />
   }
 
-  handleOnClick (card) {
+  handleOnSwipe () {
+    movieChosen.update(this.state.form)
+      .then(() => {
+        this.setState()
+      })
+      .catch(error => {
+        console.log(error.response)
+        alert("Nie można dodać filmu.")
+      });
+  }
+
+  handleOnClick () {
 
   }
 
@@ -83,29 +82,17 @@ export default class App extends React.Component {
   //   navigation.navigate("Movie")
   // }
 
-  // onHandleClick = () => {
-  //   movieChosen.update(this.state.form)
-  //     .then(() => {
-  //       this.setState()
-  //     })
-  //     .catch(error => {
-  //       console.log(error.response)
-  //       console.log(this.state.form.movie.title, this.state.form.kid.name, this.state.form.watched)
-  //       alert("Nie można dodać filmu.")
-  //     });
-  // }
-
   render() {
     return (
       <View>
         <SwipeCards
-          cards={this.state.cards}
+          cards={this.state.movies}
           loop={true}
           renderCard={this.renderCard}
           renderNoMoreCards={() => <NoMoreCards />}
-          // handleYup={this.handleYup}
+          handleYup={this.handleYup.bind(this, this.state.form.kid, this.state.form.watched)}
           // handleNope={this.handleNope}
-          key={this.state.cards.id}
+          key={this.state.movies.id}
           yupView={<Image source={require('../../assets/images/love.png')} style={{ width: 103, height: 90 }}/>}
           yupStyle={styles.yup}
           noView={<Image source={require('../../assets/images/rejects.png')} style={{ width: 100, height: 100  }}/>}

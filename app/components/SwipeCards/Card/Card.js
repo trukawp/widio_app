@@ -7,6 +7,7 @@ export default class Card extends React.Component {
   }
 
   render() {
+    // console.log(this.props.id)
     return (
       <View style={styles.card}>
         <Image style={styles.thumbnail} source={{uri: this.props.imgURL}} />

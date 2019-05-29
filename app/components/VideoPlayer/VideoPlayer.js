@@ -27,15 +27,6 @@ export default class App extends Component {
   }
 }
 
-//  <WebView
-//    style={styles.container}
-//    javaScriptEnabled={true}
-//    source={{
-//      uri: 'https://www.youtube.com/embed/ZrMfYn-GX6E',
-//    }}
-//    scrollEnabled={false}
-//  />
-
 const styles = StyleSheet.create({
 
 }); 

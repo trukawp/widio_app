@@ -39,11 +39,6 @@ export default class CategoryHomeScreen extends React.Component {
     return params.categoryId;
   }
 
-  // get categoryName() {
-  //   const { params } = this.props.navigation.state;
-  //   return params.categoryName;
-  // }
-
   render() {
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
