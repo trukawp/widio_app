@@ -24,12 +24,12 @@ export default class MoviesChosenScreen extends React.Component {
 
     this.state = {
       movies: [],
-      kid: 'fd106cc7-470c-42e3-a273-33910eff0d36',
+      kid: '6e792f65-a1f3-4d70-830c-13f333cf6dd3',
       refreshing: false,
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     kid.getKidChoices(this.kidId)
       .then(response => {
         this.setState({
@@ -37,26 +37,36 @@ export default class MoviesChosenScreen extends React.Component {
           movies: response.data
         })
       })
+      .catch(error => {
+        console.log(error.response);
+      });
   }
 
   _onRefresh = () => {
     this.setState({refreshing: true});
     kid.getKidChoices(this.kidId)
-      .then(response => {
-        this.setState({
-          ...this.state,
-          movies: response.data,
-          refreshing: false
-        })
+    .then(response => {
+      this.setState({
+        ...this.state,
+        movies: response.data,
+        refreshing: false
       })
+    })
+    .catch(error => {
+      console.log(error.response);
+      this.setState({
+        ...this.state,
+        refreshing: false
+      })
+    })
   }
 
   get kidId() {
     return this.state.kid;
   }
 
-  _onPressButton = (movieId, movieTitle, navigation) => {
-    this.props.navigation.navigate("Movie", {movieId: movieId, movieTitle: movieTitle, navigation: this.props.navigation})
+  _onPressButton = (movie, movieTitle) => {
+    this.props.navigation.navigate("Movie", {movie: movie, movieTitle: movieTitle, navigation: this.props.navigation, is_watched: false})
   }
 
   render() {
@@ -65,9 +75,11 @@ export default class MoviesChosenScreen extends React.Component {
       <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
         <View style={styles.container}>
           {this.state.movies.map(movie => 
-            <TouchableOpacity onPress={this._onPressButton.bind(this, movie.movie.id, movie.movie.title)} key={movie.movie.id}>
-            <ListCards name={movie.movie.title} imgURL={movie.movie.imgURL} />
-            </TouchableOpacity>
+            <View key={movie.movie.id}>
+              <TouchableOpacity onPress={this._onPressButton.bind(this, movie, movie.movie.title)} key={movie.movie.id}>
+                <ListCards name={movie.movie.title} imgURL={movie.movie.imgURL} />
+              </TouchableOpacity>
+            </View>
           )}
         </View>
       </ScrollView>

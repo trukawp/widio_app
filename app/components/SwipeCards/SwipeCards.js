@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet,Text,View,imgURL,Image,Button } from 'react-native';
+import { StyleSheet,Text,View,imgURL,Image,Button,Alert } from 'react-native';
 import SwipeCards from 'react-native-swipe-cards';
 import Emoji from 'react-native-emoji';
 
@@ -13,7 +13,7 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       movies: [],
-      kidId: 'fd106cc7-470c-42e3-a273-33910eff0d36',
+      kidId: '6e792f65-a1f3-4d70-830c-13f333cf6dd3',
       form: {
         movie:{},
         kid:{},
@@ -22,7 +22,7 @@ export default class App extends React.Component {
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     Promise.all([movie.all(),kid.get(this.kidId)])
       .then(([responseM,responseK]) =>
         this.setState({
@@ -70,7 +70,7 @@ export default class App extends React.Component {
       })
       .catch(error => {
         console.log(error.response)
-        alert("Nie można dodać filmu.")
+        Alert.alert('Film isnieje już na liście','Spróbuj dodać film, którego jeszcze nie dodałeś')
       });
   }
 
@@ -100,6 +100,7 @@ export default class App extends React.Component {
           // onClickHandler={this.navigateToMovie.bind(this, this.props.navigation)}
           onClickHandler={this.handleOnClick}
           smoothTransition={false}
+
         />
       </View>
     )

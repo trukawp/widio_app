@@ -10,7 +10,8 @@ export default class NoMoreCards extends Component {
   render() {
     return (
       <View>
-        <Text style={styles.noMoreCardsText}>Brak więcej bajek</Text>
+        <Text style={styles.noMoreCardsText}>Brak więcej bajek..</Text>
+        <Text style={styles.noMoreCardsText}>Niedługo dodamy nowe :)</Text>
       </View>
     )
   }
@@ -19,5 +20,6 @@ export default class NoMoreCards extends Component {
 const styles = StyleSheet.create({
   noMoreCardsText: {
     fontSize: 22,
+    alignSelf: 'center',
   },
 })

@@ -19,7 +19,19 @@ export const movie = {
 
 export const movieChosen = {
   update: (data) => (
-      axios.post('/movie_chosen/update', data)
+    axios.post('/movie_chosen/update', data)
+  ),
+  delete: (id) => (
+    axios.delete(`/movie_chosen/${id}`)
+  ),
+};
+
+export const movieWatched = {
+  update: (data) => (
+    axios.post('/movie_watched/update', data)
+  ),
+  delete: (id) => (
+    axios.delete(`/movie_watched/${id}`)
   ),
 };
 

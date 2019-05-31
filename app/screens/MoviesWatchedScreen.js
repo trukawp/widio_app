@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView,StyleSheet,Text,View,ImageBackground,TouchableOpacity } from 'react-native';
+import { ScrollView,StyleSheet,Text,View,ImageBackground,TouchableOpacity,RefreshControl } from 'react-native';
 import { Rating } from 'react-native-ratings';
 
 import { kid } from '../services/api';
@@ -25,12 +25,12 @@ export default class MoviesWatchedScreen extends React.Component {
 
     this.state = {
       movies: [],
-      kid: 'fd106cc7-470c-42e3-a273-33910eff0d36',
-      starCount: 3.5,
+      kid: '6e792f65-a1f3-4d70-830c-13f333cf6dd3',
+      refreshing: false,
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     kid.getKidWatched(this.kidId)
       .then(response => {
         this.setState({
@@ -38,29 +38,51 @@ export default class MoviesWatchedScreen extends React.Component {
           movies: response.data
         })
       })
+      .catch(error => {
+        console.log(error.response)
+      });
   }
 
-  ratingCompleted(rating) {
-    console.log("Rating is: " + rating)
+  // ratingCompleted(rating) {
+  //   console.log("Rating is: " + rating)
+  // }
+
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    kid.getKidWatched(this.kidId)
+    .then(response => {
+      this.setState({
+        ...this.state,
+        movies: response.data,
+        refreshing: false
+      })
+    })
+    .catch(error => {
+      console.log(error.response);
+      this.setState({
+        ...this.state,
+        refreshing: false
+      })
+    })
   }
 
   get kidId() {
     return this.state.kid;
   }
 
-  _onPressButton = (movieId, movieTitle) => {
-    this.props.navigation.navigate("Movie", {movieId: movieId, movieTitle: movieTitle})
+  _onPressButton = (movie, movieTitle) => {
+    this.props.navigation.navigate("Movie", {movie: movie, movieTitle: movieTitle, navigation: this.props.navigation, is_watched: true})
   }
 
   render() {
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
-      <ScrollView>
+      <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
         <View style={styles.container}>
           {this.state.movies.map(movie =>
-          <View key={movie.movie.id} style={{}}>
-            <TouchableOpacity onPress={this._onPressButton.bind(this, movie.movie.id, movie.movie.title)} key={movie.movie.id}>
-            <ListCards name={movie.movie.title} imgURL={movie.movie.imgURL} />
+          <View key={movie.movie.id}>
+            <TouchableOpacity onPress={this._onPressButton.bind(this, movie, movie.movie.title)} key={movie.movie.id}>
+              <ListCards name={movie.movie.title} imgURL={movie.movie.imgURL} />
             </TouchableOpacity>
             <Text style={{ alignSelf: 'center' }}>Ocena:</Text>
             <Rating
@@ -95,9 +117,9 @@ const styles = StyleSheet.create({
   },
   stars: {
     marginBottom: 10,
-    borderRadius: 5,
-    borderColor: 'grey',
-    borderWidth: 0,
+    // borderRadius: 5,
+    // borderColor: 'grey',
+    // borderWidth: 0,
   },
   backgroundImage: {
     flex: 1,
