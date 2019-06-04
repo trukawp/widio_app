@@ -1,21 +1,38 @@
 import React from 'react';
-import { ScrollView,StyleSheet,View,Image } from 'react-native';
+import { ScrollView,StyleSheet,View,Image,AsyncStorage,DatePickerIOS,Dimensions,Alert } from 'react-native';
 import { Card,Button,Input,Text } from "react-native-elements";
 import { withFormik } from 'formik';
 import * as yup from 'yup';
+import Dialog from "react-native-dialog";
 
-import { auth } from '../services/api';
+import { auth,kid } from '../services/api';
 
 class SignUpScreen extends React.Component {
-  // static navigationOptions = {
-  //   header: null,
-  // };
 
   constructor(props) {
     super(props);
-
     this.state = {
+      chosenDate: new Date(),
+      dialog: false,
     };
+
+    this.setDate = this.setDate.bind(this);
+  }
+
+  setDate(newDate) {
+    this.setState({chosenDate: newDate});
+  }
+
+  onCancel = () => {
+    this.setState({
+      dialog: false,
+    })
+  }
+
+  showDialog = () => {
+    this.setState({
+      dialog: true,
+    })
   }
 
   onChangeText = (name) => (text) => {
@@ -32,15 +49,11 @@ class SignUpScreen extends React.Component {
           <View style={{ alignItems: 'center' }}>
             <Image
               source={require('../assets/images/widio_logo.png')}
-              style={{ width: 200, height: 200  }}
+              style={{ width: 100, height: 100  }}
             />
           </View>
           <Card>
-            {
-              errors.message && <Text style={styles.error}>
-                {errors.message}
-              </Text>
-            }
+            {errors.message && <Text style={styles.error}>{errors.message}</Text>}
             <Text>Email</Text>
             <Input
               name="email"
@@ -68,7 +81,14 @@ class SignUpScreen extends React.Component {
               secureTextEntry
               placeholder="Potwierdz hasło..."
             />
-
+            <Text>Imię dziecka</Text>
+            <Input
+              name="name"
+              errorMessage={errors.name}
+              value={values.name}
+              onChangeText={this.onChangeText("name")}
+              placeholder="Imię dziecka..."
+            />
             <Button
               buttonStyle={{ marginTop: 20 }}
               backgroundColor="#03A9F4"
@@ -90,34 +110,47 @@ class SignUpScreen extends React.Component {
 }
 
 export default withFormik({
-  handleSubmit: async (values) => {
+  handleSubmit: async (values, { setErrors }) => {
+    // console.log('in', values)
     try {
+      // console.log('try')
+      // console.log('values', values)
       const params = {
         email: values.email,
         password: values.password,
-        passoword_confirmation: values.passoword_confirmation,
+        name: values.name,
+        birthDate: values.birthDate,
       };
+      // console.log('params', params);
 
-      const { data } = await auth.signUp(params);
+      const { data } = await kid.update(params);
+      // console.log('token', data.headers.authorization)
 
       // TODO: set proper path to auth_token
-      await AsyncStorage.saveItem('token', data.payload.auth_token);
-      props.navigation.navigate('Home');
+      // console.log('after storage')
+      values.navigation.navigate('SignIn');
+      Alert.alert (
+        '',
+        'Sukces! Udało się poprawnie założyć konto',
+        [{text: 'OK', onPress: () => console.log('sukcess')}]
+      );
+      // console.log('after navigate')
     } catch (error) {
+      // console.log('error:',error)
       if (error.errors) {
         setErrors({
           message: error.errors.message,
         });
       }
-      setSubmitting(false);
     }
   },
   validationSchema: yup.object().shape({
     email: yup.string().required('Email jest wymagany'),
     password: yup.string().required('Hasło jest wymagane'),
-    passoword_confirmation: yup.string()
-      .oneOf([yup.ref('password'), null], 'Hasła musza być takie same')
-      .required('Potwiedzenie hasła jest wymagane'),
+    password_confirmation: yup.string()
+      .oneOf([yup.ref('password'), null], "Passwords don't match")
+      .required('Confirm Password is required'),
+    name: yup.string().required('Imię dziecka jest wymagane'),
   }),
 })(SignUpScreen);
 
@@ -129,7 +162,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#343E7A',
     flexDirection: 'column',
-    paddingTop: 50,
+    paddingTop: 50
+    ,
   },
   error: {
     fontSize: 14,

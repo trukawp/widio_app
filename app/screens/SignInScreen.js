@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Image, AsyncStorage,StatusBar } from 'react-native';
+import { ScrollView, StyleSheet, View, Image, AsyncStorage,StatusBar,Alert } from 'react-native';
 import { Card, Button, Input, Text } from 'react-native-elements';
 import { withFormik } from 'formik';
 import * as yup from 'yup';
@@ -10,13 +10,6 @@ class SignInScreen extends React.Component {
   // static navigationOptions = {
   //   header: null,
   // };
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-    };
-  }
 
   componentWillMount() {
     StatusBar.setHidden(false);
@@ -79,24 +72,33 @@ class SignInScreen extends React.Component {
 }
 
 export default withFormik({
-  handleSubmit: async (values) => {
-    console.log('in')
+  handleSubmit: async (values, { setErrors }) => {
+    // console.log('in', values)
     try {
+      // console.log('try')
       const params = {
         email: values.email,
         password: values.password,
       };
-
-      console.log('email', email)
-      // console.log('email' values.email)
+      // console.log('params', params);
 
       const data = await auth.signIn(params);
-      console.log('data', data)
+      // console.log('data:', data);
+      // console.log('data headers:', data.headers);
+      // console.log('token:', data.headers.authorization);
 
       // TODO: set proper path to auth_token
-      await AsyncStorage.saveItem('token', data.payload.auth_token);
-      props.navigation.navigate('Home');
+      await AsyncStorage.setItem('token', data.headers.authorization);
+      // console.log('after storage')
+      values.navigation.navigate('Home');
+      // console.log('after navigate')
     } catch (error) {
+      // console.log('error:',error)
+      Alert.alert (
+        '',
+        'Nieprawidłowy adres email lub hasło',
+        [{text: 'OK', onPress: () => console.log('ok..')}]
+      );
       if (error.errors) {
         setErrors({
           message: error.errors.message,

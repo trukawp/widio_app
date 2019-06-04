@@ -2,7 +2,7 @@ import axios from "axios";
 import { AsyncStorage } from 'react-native';
 
 const apiClient = axios.create({
-  baseURL: 'http://192.168.0.104:8080/api',
+  baseURL: 'http://192.168.0.102:8080/api',
 });
 
 apiClient.interceptors.request.use(
@@ -13,6 +13,7 @@ apiClient.interceptors.request.use(
       headers: token ? {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
+        'Authorization': token,
       } : {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',

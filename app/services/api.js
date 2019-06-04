@@ -14,7 +14,10 @@ export const movie = {
   ),
   get: (id) => (
     axios.get(`/movie/get/${id}`)
-  )
+  ),
+  getMovieMedias: (id) => (
+    axios.get(`/movie/${id}/movie_medias`)
+  ),
 };
 
 export const movieChosen = {
@@ -56,5 +59,17 @@ export const kid = {
   ),
   getKidWatched: (id) => (
     axios.get(`/kid/${id}/kid_watched`)
+  ),
+  update: (data) => (
+    axios.post('/kid/update', data)
+  ),
+  findByEmail: (email) => (
+    axios.get(`/kid/get/email?email=${email}`)
+  ),
+};
+
+  export const media = {
+  all: () => (
+    axios.get('/media/get/all')
   ),
 };

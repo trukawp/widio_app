@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet,Text,View,imgURL,Image,Button,Alert } from 'react-native';
+import { StyleSheet,Text,View,imgURL,Image,Button,Alert,AsyncStorage } from 'react-native';
 import SwipeCards from 'react-native-swipe-cards';
-import Emoji from 'react-native-emoji';
+import JWT from 'expo-jwt';
 
 import Card from './Card/Card'
 import NoMoreCards from './NoMoreCards/NoMoreCards'
@@ -13,7 +13,6 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       movies: [],
-      kidId: '6e792f65-a1f3-4d70-830c-13f333cf6dd3',
       form: {
         movie:{},
         kid:{},
@@ -22,10 +21,18 @@ export default class App extends React.Component {
     };
   }
 
-  componentWillMount() {
-    Promise.all([movie.all(),kid.get(this.kidId)])
+  componentDidMount() {
+    const key ="SecretKeyToGenJWTs";
+    const jwttoken = AsyncStorage.getItem('token', (err, result) => {
+      const code = (JWT.decode(result, key));
+      this.retrieveData(code.sub);
+    });
+  }
+
+  retrieveData(email) {
+    Promise.all([movie.all(),kid.findByEmail(email)])
       .then(([responseM,responseK]) =>
-        this.setState({
+       this.setState({
           movies: responseM.data,
           form: {
             kid: responseK.data,
@@ -34,25 +41,12 @@ export default class App extends React.Component {
       )
   }
 
-  //    movie.all()
-  //     .then(response => {
-  //       this.setState({
-  //         ...this.state,
-  //         cards: response.data
-  //       })
-  //     })
-  // }
-
-  get kidId() {
-    return this.state.kidId;
-  }
-
   handleYup (kid, watched, movie) {
     return this.setState({ form: {
-        ...this.state.form,
-        kid: kid,
-        watched: watched,
-        movie: movie,
+      ...this.state.form,
+      kid: kid,
+      watched: watched,
+      movie: movie,
     }}, () => {
       this.handleOnSwipe();
       }
@@ -70,7 +64,7 @@ export default class App extends React.Component {
       })
       .catch(error => {
         console.log(error.response)
-        Alert.alert('Film isnieje już na liście','Spróbuj dodać film, którego jeszcze nie dodałeś')
+        Alert.alert('','Spróbuj dodać film, którego jeszcze nie dodałeś')
       });
   }
 
@@ -78,8 +72,16 @@ export default class App extends React.Component {
 
   }
 
-  // navigateToMovie (navigation) {
-  //   navigation.navigate("Movie")
+  // handleYup = (card) => {
+  //   this.handleOnSwipe({ kid: this.state.kid, movie: card, watched: false });
+  // }
+
+  // handleOnSwipe (formData) {
+  //   movieChosen.update(formData)
+  //     .catch(error => {
+  //       console.log(error.response)
+  //       Alert.alert('Film isnieje już na liście','Spróbuj dodać film, którego jeszcze nie dodałeś')
+  //     });
   // }
 
   render() {
@@ -90,17 +92,15 @@ export default class App extends React.Component {
           loop={true}
           renderCard={this.renderCard}
           renderNoMoreCards={() => <NoMoreCards />}
+          // handleYup={this.handleYup}
           handleYup={this.handleYup.bind(this, this.state.form.kid, this.state.form.watched)}
-          // handleNope={this.handleNope}
           key={this.state.movies.id}
           yupView={<Image source={require('../../assets/images/love.png')} style={{ width: 103, height: 90 }}/>}
           yupStyle={styles.yup}
           noView={<Image source={require('../../assets/images/rejects.png')} style={{ width: 100, height: 100  }}/>}
           nopeStyle={styles.nope}
-          // onClickHandler={this.navigateToMovie.bind(this, this.props.navigation)}
           onClickHandler={this.handleOnClick}
           smoothTransition={false}
-
         />
       </View>
     )

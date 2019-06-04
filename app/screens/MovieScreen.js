@@ -4,7 +4,7 @@ import { Card,Button,Text } from 'react-native-elements';
 import { Video } from 'expo';
 import Dialog from "react-native-dialog";
 import { Rating } from 'react-native-ratings';
-import { movie,movieChosen,movieWatched,kid } from '../services/api';
+import { movie,movieChosen,movieWatched,kid,media } from '../services/api';
 
 import MovieIcon from '../components/MovieIcon';
 import VideoPlayer from '../components/VideoPlayer/VideoPlayer';
@@ -34,29 +34,31 @@ export default class MovieScreen extends React.Component {
     this.state = {
       movie:{},
       pictures:[],
+      media:[],
       form: {
         movie:{},
         kid:{},
         vote: 5,
       },
-      kidId: '6e792f65-a1f3-4d70-830c-13f333cf6dd3',
+      kidId: 'e96cd6e4-8f50-4909-a751-73268fda76b0',
       is_watched: this.props.navigation.state.params.is_watched,
-      dialog_visible: false,
+      rating_dialog: false,
+      delete_dialog: false,
     };
   }
 
   componentWillMount() {
-    Promise.all([movie.get(this.movieId), kid.get(this.kidId)])
-      .then(([responseM,responseK]) => {
+    Promise.all([movie.get(this.movieId), kid.get(this.kidId), movie.getMovieMedias(this.movieId)])
+      .then(([responseM,responseK,responseMed]) => {
         this.setState({
           movie: responseM.data,
           pictures: responseM.data.pictures,
+          media: responseMed.data,
           ...this.form,
           form: {
             movie: responseM.data,
             kid: responseK.data,
           },
-          // is_watched: this.props.navigation.state.params.is_watched
         })
       })
   }
@@ -65,25 +67,21 @@ export default class MovieScreen extends React.Component {
     this.showStatusBar();
   }
 
-  deleteMovieChosen(selectedMovieId) {
-    movieChosen.delete(selectedMovieId)
-      .then(response => {
-        this.props.navigation.goBack();
-      })
+  deleteMovieChosen = async (selectedMovieId) => {
+    this.props.navigation.goBack();
+    await movieChosen.delete(selectedMovieId);
   }
 
-  deleteMovieWatched(selectedMovieId) {
-    movieWatched.delete(selectedMovieId)
-      .then(response => {
-        this.props.navigation.goBack();
-      })
+  deleteMovieWatched = async (selectedMovieId) => {
+    this.props.navigation.goBack();
+    await movieWatched.delete(selectedMovieId);
   }
 
   isWatched(form) {
     movieWatched.update(form)
       .then(() => {
         this.setState({
-          dialog_visible: false,
+          rating_dialog: false,
         },() => {
           this.deleteMovieChosen(this.selectedMovieId)
         }
@@ -115,15 +113,22 @@ export default class MovieScreen extends React.Component {
     return params.movie.id;
   }
 
-  onCancel() {
+  onCancel = () => {
     this.setState({
-      dialog_visible: false,
+      rating_dialog: false,
+      delete_dialog: false,
     })
   }
 
-  showDialog() {
+  showRatingDialog() {
     this.setState({
-      dialog_visible: true,
+      rating_dialog: true,
+    })
+  }
+
+  showDeleteDialog() {
+    this.setState({
+      delete_dialog: true,
     })
   }
 
@@ -136,17 +141,14 @@ export default class MovieScreen extends React.Component {
   //   });
   // }
 
-  ratingCompleted = (rating) => { 
-    // this.setState ({
-    //   form: {
-    //     vote : rating 
-    //   }
-    // });
-    console.log('Rating:' + rating)
+  ratingCompleted = (rating) => {
+    this.setState({
+      form: { ...this.state.form, vote: rating },
+    });
   }
 
-  rating2Completed(rating) {
-    console.log(rating);
+  submit = () => {
+    this.isWatched(this.state.form);
   }
 
   showStatusBar() {
@@ -159,40 +161,44 @@ export default class MovieScreen extends React.Component {
 
 
   render() {
-    const reactNativeModalProps = {
-      onBackdropPress: () => this.onCancel(),
-    };
-    console.log(this.state.pigzdurez)
+    console.log()
     return (
-      <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
+      <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.3}}>
         <ScrollView>
         <View style={styles.container}>
           <MovieImages pictures={this.state.pictures} />
         </View>
           { this.state.is_watched ?
           <View style={styles.buttons}>
-            <TouchableOpacity onPress={this.deleteMovieWatched.bind(this, this.selectedMovieId)}>
+            <TouchableOpacity onPress={() => {this.showDeleteDialog()}}>
               <MovieIcon name='ios-close-circle' color='black' size={50} />
             </TouchableOpacity>
             <TouchableOpacity onPress={this.renderVideo}>
               <MovieIcon name='ios-play-circle' color='red' size={70} />
             </TouchableOpacity>
             <Text style={{ fontSize: 35 }}>
-              {this.state.form.vote}<MovieIcon name='ios-star' color='gold' size={40} />
+              {this.props.navigation.state.params.movie.vote}<MovieIcon name='ios-star' color='gold' size={40} />
             </Text>
+            <Dialog.Container visible={this.state.delete_dialog} onBackdropPress={this.onCancel}>
+              <Dialog.Title>Czy na pewno chcesz usunąć?</Dialog.Title>
+              <MovieIcon name='ios-close-circle' color='black' size={60} />
+              <Dialog.Button label="ANULUJ" onPress={() => this.onCancel()} />
+              <Dialog.Button label="OK" onPress={() => this.deleteMovieWatched(this.selectedMovieId)} />
+            </Dialog.Container>
           </View>
           :           
           <View style={styles.buttons}>
-            <TouchableOpacity onPress={this.deleteMovieChosen.bind(this, this.selectedMovieId)}>
+            <TouchableOpacity onPress={() => {this.showDeleteDialog()}}>
               <MovieIcon name='ios-heart-dislike' color='black' size={50} />
             </TouchableOpacity>
             <TouchableOpacity onPress={this.renderVideo}>
               <MovieIcon name='ios-play-circle' color='red' size={70} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => {this.showDialog()}}>
+            <TouchableOpacity onPress={() => {this.showRatingDialog()}}>
               <MovieIcon name='ios-star-outline' color='gold' size={50} />
             </TouchableOpacity>
-            <Dialog.Container visible={this.state.dialog_visible} {...reactNativeModalProps}>
+            <Dialog.Container visible={this.state.rating_dialog} onBackdropPress={this.onCancel}>
+              <Dialog.Title>Oceń bajkę</Dialog.Title>
               <Rating
                 type='star'
                 ratingCount={5}
@@ -203,12 +209,25 @@ export default class MovieScreen extends React.Component {
                 startingValue={3}
               />
               <Dialog.Button label="ANULUJ" onPress={() => this.onCancel()} />
-              <Dialog.Button label="OK" onPress={() => this.isWatched(this.state.form)} />
+              <Dialog.Button label="OK" onPress={this.submit} />
+            </Dialog.Container>
+            <Dialog.Container visible={this.state.delete_dialog} onBackdropPress={this.onCancel}>
+              <Dialog.Title>Czy na pewno chcesz usunąć?</Dialog.Title>
+              <MovieIcon name='ios-heart-dislike' color='black' size={60} />
+              <Dialog.Button label="ANULUJ" onPress={() => this.onCancel()} />
+              <Dialog.Button label="OK" onPress={() => this.deleteMovieChosen(this.selectedMovieId)} />
             </Dialog.Container>
           </View>
           }
           <Text style={{alignSelf: 'center', fontSize: 25, fontWeight: 'bold'}}>{this.state.movie.title}</Text>
           <Text style={{margin: 10, textAlign: 'justify', fontSize: 20 }}>{this.state.movie.description}</Text>
+          <Text style={{marginLeft: 10, fontSize: 20, fontWeight: 'bold'}}>Dostępne również na:</Text>
+          <View style={{ flex:1, flexDirection: 'row', margin: 10, justifyContent: 'space-around', flexWrap: 'wrap'}}>
+            { this.state.media.map(media =>
+              <Image source={{uri: media.media.imgURL}} style={{height: 60, width: 120}} key={media.media.id} resizeMode='contain'/>
+              )
+            }
+          </View>
         </ScrollView>
       </ImageBackground>
     );

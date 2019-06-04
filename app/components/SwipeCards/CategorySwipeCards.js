@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet,Text,View,imgURL,Image } from 'react-native';
+import { StyleSheet,Text,View,imgURL,AsyncStorage,Image } from 'react-native';
 import SwipeCards from 'react-native-swipe-cards';
+import JWT from 'expo-jwt';
 
 import Card from './Card/Card'
 import NoMoreCards from './NoMoreCards/NoMoreCards'
@@ -13,7 +14,6 @@ export default class App extends React.Component {
     this.state = {
       movies: [],
       outOfCards: false,
-      kidId: '6e792f65-a1f3-4d70-830c-13f333cf6dd3',
       form: {
         movie:{},
         kid:{},
@@ -22,20 +22,18 @@ export default class App extends React.Component {
     }
   }
 
-  // componentDidMount() {
-  //   category.getCategoryMovies(this.categoryId)
-  //     .then(response => {
-  //       this.setState({
-  //         ...this.state,
-  //         movies: response.data
-  //       })
-  //     })
-  // }
+  componentDidMount() {
+    const key ="SecretKeyToGenJWTs";
+    const jwttoken = AsyncStorage.getItem('token', (err, result) => {
+      const code = (JWT.decode(result, key));
+      this.retrieveData(code.sub);
+    });
+  }
 
-  componentWillMount() {
-    Promise.all([category.getCategoryMovies(this.categoryId),kid.get(this.kidId)])
+  retrieveData(email) {
+    Promise.all([category.getCategoryMovies(this.categoryId), kid.findByEmail(email)])
       .then(([responseM,responseK]) =>
-        this.setState({
+       this.setState({
           movies: responseM.data,
           form: {
             kid: responseK.data,
@@ -46,10 +44,6 @@ export default class App extends React.Component {
 
   get categoryId() {
     return this.props.categoryId;
-  }
-
-  get kidId() {
-    return this.state.kidId;
   }
 
   handleYup (kid, watched, movie) {
@@ -64,14 +58,6 @@ export default class App extends React.Component {
     );
   }
 
-  // handleYup (card) {
-  //   console.log("Tak")
-  // }
-
-  // handleNope (card) {
-  //   console.log("Nie")
-  // }
-
   renderCard = (data) => <Card {...data} />
 
   handleOnSwipe () {
@@ -81,17 +67,13 @@ export default class App extends React.Component {
       })
       .catch(error => {
         console.log(error.response)
-        Alert.alert('Film isnieje już na liście','Spróbuj dodać film, którego jeszcze nie dodałeś')
+        Alert.alert('','Spróbuj dodać film, którego jeszcze nie dodałeś')
       });
   }
 
   handleOnClick (card) {
 
   }
-
-  // navigateToMovie (navigation) {
-  //   navigation.navigate("Movie")
-  // }
 
   render() {
     return (

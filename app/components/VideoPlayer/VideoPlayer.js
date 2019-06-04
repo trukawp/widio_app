@@ -3,12 +3,6 @@ import { Text,View,StyleSheet,WebView,Dimensions,Image,StatusBar } from 'react-n
 import { Constants,Video,ScreenOrientation } from 'expo';
 
 export default class App extends Component {
-
-
-  showStatusBar() {
-    StatusBar.setHidden(false)
-  }
-
   render() {
     return (
         <Video
@@ -21,7 +15,6 @@ export default class App extends Component {
           // isLooping
           style={{ width: Dimensions.get('window').width, height: 300, marginBottom: 25 }}
           useNativeControls={true}
-          onFullScreenUpdate={this.StatusBar}
         />
     );
   }

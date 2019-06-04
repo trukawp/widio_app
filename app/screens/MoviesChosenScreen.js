@@ -1,5 +1,7 @@
 import React from 'react';
-import { ScrollView,StyleSheet,Text,View,TouchableOpacity,ImageBackground,RefreshControl } from 'react-native';
+import { ScrollView,StyleSheet,Text,View,TouchableOpacity,ImageBackground,RefreshControl,AsyncStorage } from 'react-native';
+import { NavigationEvents } from 'react-navigation';
+import JWT from 'expo-jwt';
 
 import { kid } from '../services/api';
 import ListCards from '../components/ListCards/ListCards.js';
@@ -24,23 +26,46 @@ export default class MoviesChosenScreen extends React.Component {
 
     this.state = {
       movies: [],
-      kid: '6e792f65-a1f3-4d70-830c-13f333cf6dd3',
+      kid: {},
       refreshing: false,
     };
   }
 
-  componentWillMount() {
-    kid.getKidChoices(this.kidId)
+  componentDidMount() {
+    const key ="SecretKeyToGenJWTs";
+    const jwttoken = AsyncStorage.getItem('token', (err, result) => {
+      const code = (JWT.decode(result, key));
+      this.retrieveData(code.sub);
+    });
+  }
+
+  retrieveData(email) {
+    kid.findByEmail(email)
       .then(response => {
         this.setState({
           ...this.state,
-          movies: response.data
-        })
+          kid: response.data
+        }),
+        kid.getKidChoices(response.data.id)
+          .then(responseM => {
+            this.setState({
+              ...this.state,
+              movies: responseM.data
+            })
+          })
       })
-      .catch(error => {
-        console.log(error.response);
-      });
   }
+
+    // kid.getKidChoices(this.kidId)
+    //   .then(response => {
+    //     this.setState({
+    //       ...this.state,
+    //       movies: response.data
+    //     })
+    //   })
+    //   .catch(error => {
+    //     console.log(error.response);
+    //   });
 
   _onRefresh = () => {
     this.setState({refreshing: true});
@@ -53,7 +78,7 @@ export default class MoviesChosenScreen extends React.Component {
       })
     })
     .catch(error => {
-      console.log(error.response);
+      // console.log(error.response);
       this.setState({
         ...this.state,
         refreshing: false
@@ -62,7 +87,7 @@ export default class MoviesChosenScreen extends React.Component {
   }
 
   get kidId() {
-    return this.state.kid;
+    return this.state.kid.id;
   }
 
   _onPressButton = (movie, movieTitle) => {
@@ -71,7 +96,10 @@ export default class MoviesChosenScreen extends React.Component {
 
   render() {
     return (
-      <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
+      <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.3}}>
+      <NavigationEvents
+        onWillFocus={this._onRefresh}
+      />
       <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
         <View style={styles.container}>
           {this.state.movies.map(movie => 

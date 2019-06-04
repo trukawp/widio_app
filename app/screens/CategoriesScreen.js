@@ -43,7 +43,7 @@ export default class CategoriesScreen extends React.Component {
 
   render() {
     return (
-      <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
+      <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.3}}>
       <ScrollView style={styles.container}>
         <View style={styles.box}>
           {this.state.categories.map(category =>

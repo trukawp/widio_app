@@ -8,7 +8,7 @@ export default class App extends Component {
   render() {
     return (
       <View style={{ width: Dimensions.get('window').width, height: 277, backgroundColor: '#000000' }} showButtons={true}>
-        <Swiper showsButtons={false} index={1} loop={true}>
+        <Swiper showsButtons={false} loop={true}>
         { this.props.pictures.map(picture =>
           <Image style={styles.thumbnail} source={{uri: picture.imgURL}} key={picture.id}/>
         )}

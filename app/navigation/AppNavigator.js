@@ -129,7 +129,7 @@ const SignThingsStack = createSwitchNavigator({
   }
 );
 
-const AppContainer = createAppContainer(TabNavigator);
+const AppContainer = createAppContainer(SignThingsStack);
 
 export default class App extends React.Component {
   render() {

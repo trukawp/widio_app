@@ -1,6 +1,8 @@
 import React from 'react';
-import { ScrollView,StyleSheet,Text,View,ImageBackground,TouchableOpacity,RefreshControl } from 'react-native';
+import { ScrollView,StyleSheet,Text,View,ImageBackground,TouchableOpacity,RefreshControl,AsyncStorage } from 'react-native';
 import { Rating } from 'react-native-ratings';
+import { NavigationEvents } from 'react-navigation';
+import JWT from 'expo-jwt';
 
 import { kid } from '../services/api';
 import ListCards from '../components/ListCards/ListCards.js';
@@ -25,22 +27,47 @@ export default class MoviesWatchedScreen extends React.Component {
 
     this.state = {
       movies: [],
-      kid: '6e792f65-a1f3-4d70-830c-13f333cf6dd3',
+      kid: {},
       refreshing: false,
     };
   }
 
-  componentWillMount() {
-    kid.getKidWatched(this.kidId)
+  // componentDidMount() {
+  //   kid.getKidWatched(this.kidId)
+  //     .then(response => {
+  //       this.setState({
+  //         ...this.state,
+  //         movies: response.data
+  //       })
+  //     })
+  //     .catch(error => {
+  //       console.log(error.response)
+  //     });
+  // }
+
+  componentDidMount() {
+    const key ="SecretKeyToGenJWTs";
+    const jwttoken = AsyncStorage.getItem('token', (err, result) => {
+      const code = (JWT.decode(result, key));
+      this.retrieveData(code.sub);
+    });
+  }
+
+  retrieveData(email) {
+    kid.findByEmail(email)
       .then(response => {
         this.setState({
           ...this.state,
-          movies: response.data
-        })
+          kid: response.data
+        }),
+        kid.getKidWatched(response.data.id)
+          .then(responseM => {
+            this.setState({
+              ...this.state,
+              movies: responseM.data
+            })
+          })
       })
-      .catch(error => {
-        console.log(error.response)
-      });
   }
 
   // ratingCompleted(rating) {
@@ -58,7 +85,7 @@ export default class MoviesWatchedScreen extends React.Component {
       })
     })
     .catch(error => {
-      console.log(error.response);
+      // console.log(error.response);
       this.setState({
         ...this.state,
         refreshing: false
@@ -67,21 +94,24 @@ export default class MoviesWatchedScreen extends React.Component {
   }
 
   get kidId() {
-    return this.state.kid;
+    return this.state.kid.id;
   }
 
-  _onPressButton = (movie, movieTitle) => {
-    this.props.navigation.navigate("Movie", {movie: movie, movieTitle: movieTitle, navigation: this.props.navigation, is_watched: true})
+  _onPressButton = (movie, movieTitle, movieVote) => {
+    this.props.navigation.navigate("Movie", {movie: movie, movieTitle: movieTitle, navigation: this.props.navigation, is_watched: true, movieVote: movieVote})
   }
 
   render() {
     return (
-      <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
+      <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.3}}>
+      <NavigationEvents
+        onWillFocus={this._onRefresh}
+      />
       <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
         <View style={styles.container}>
           {this.state.movies.map(movie =>
           <View key={movie.movie.id}>
-            <TouchableOpacity onPress={this._onPressButton.bind(this, movie, movie.movie.title)} key={movie.movie.id}>
+            <TouchableOpacity onPress={this._onPressButton.bind(this, movie, movie.movie.title, movie.movie.vote)} key={movie.movie.id}>
               <ListCards name={movie.movie.title} imgURL={movie.movie.imgURL} />
             </TouchableOpacity>
             <Text style={{ alignSelf: 'center' }}>Ocena:</Text>

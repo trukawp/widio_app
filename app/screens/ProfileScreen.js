@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView,StyleSheet,View,ImageBackground } from 'react-native';
+import { ScrollView,StyleSheet,View,ImageBackground,AsyncStorage } from 'react-native';
 import { Card,Button,Text } from "react-native-elements";
 import { Audio, Asset, AppLoading } from 'expo';
 
@@ -39,14 +39,15 @@ export default class ProfileScreen extends React.Component {
 
   }
 
-  handleNavigate = () => {
+  handleLogout = () => {
+    AsyncStorage.removeItem('token');
     this.props.navigation.navigate("SignIn");
   }
 
   render() {
     const {navigate} = this.props.navigation;
     return (
-      <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
+      <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.3}}>
       <View style={{ paddingVertical: 20 }}>
         <Card title="Pawel Trukawka">
           <View
@@ -67,7 +68,7 @@ export default class ProfileScreen extends React.Component {
             backgroundColor="#03A9F4"
             title="SIGN OUT"
             // onPress={this.handlePLay}
-            onPress={this.handleNavigate}
+            onPress={this.handleLogout}
           />
         </Card>
       </View>

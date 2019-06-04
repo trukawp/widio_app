@@ -62,7 +62,7 @@ export default class MovieVideoScreen extends React.Component {
 
   render() {
     return (
-      <ImageBackground style={styles.backgroundImage} imageStyle={{opacity: 0.5}}>
+      <ImageBackground style={styles.backgroundImage} imageStyle={{opacity: 0.3}}>
         <View style={styles.container}>
           <VideoPlayer shouldPlay={this.state.shouldPlay} />
           <NavigationEvents onDidFocus={payload => { this.setState({ shouldPlay: false }); }} onWillBlur={payload => { this.setState({ shouldPlay: false }); }} />
