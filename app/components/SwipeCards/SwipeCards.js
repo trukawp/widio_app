@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { StyleSheet,Text,View,imgURL,Image,Button,Alert,AsyncStorage } from 'react-native';
 import SwipeCards from 'react-native-swipe-cards';
 import JWT from 'expo-jwt';
+import { Audio } from 'expo';
+import { NavigationEvents } from 'react-navigation';
 
 import Card from './Card/Card'
 import NoMoreCards from './NoMoreCards/NoMoreCards'
@@ -41,6 +43,26 @@ export default class App extends React.Component {
       )
   }
 
+  handlePLay = async () => {
+    const soundObject = new Audio.Sound();
+      try {
+        await soundObject.loadAsync(require('../../assets/audio/button_click.mp3'));
+        await soundObject.playAsync();
+        // Your sound is playing!
+      } catch (error) {
+        // An error occurred!
+      }
+    // movieChosen.update(this.state.form)
+    //   .then(() => {
+    //     this.setState(),
+    //     this.handlePLay;
+    //   })
+    //   .catch(error => {
+    //     // console.log(error.response)
+    //     Alert.alert('','Spróbuj dodać film, którego jeszcze nie dodałeś')
+    //   });
+  }
+
   handleYup (kid, watched, movie) {
     return this.setState({ form: {
       ...this.state.form,
@@ -53,23 +75,15 @@ export default class App extends React.Component {
     );
   }
 
-  renderCard = (data) => {
-    return <Card {...data} />
-  }
-
   handleOnSwipe () {
     movieChosen.update(this.state.form)
       .then(() => {
-        this.setState()
+        this.setState();
       })
       .catch(error => {
         console.log(error.response)
         Alert.alert('','Spróbuj dodać film, którego jeszcze nie dodałeś')
       });
-  }
-
-  handleOnClick () {
-
   }
 
   // handleYup = (card) => {
@@ -80,9 +94,18 @@ export default class App extends React.Component {
   //   movieChosen.update(formData)
   //     .catch(error => {
   //       console.log(error.response)
-  //       Alert.alert('Film isnieje już na liście','Spróbuj dodać film, którego jeszcze nie dodałeś')
+  //        Alert.alert('','Spróbuj dodać film, którego jeszcze nie dodałeś')
   //     });
   // }
+
+  handleOnClick () {
+
+  }
+
+
+  renderCard = (data) => {
+    return <Card {...data} />
+  }
 
   render() {
     return (
@@ -92,6 +115,7 @@ export default class App extends React.Component {
           loop={true}
           renderCard={this.renderCard}
           renderNoMoreCards={() => <NoMoreCards />}
+          // handleNope={this.handlePLay}
           // handleYup={this.handleYup}
           handleYup={this.handleYup.bind(this, this.state.form.kid, this.state.form.watched)}
           key={this.state.movies.id}
@@ -99,7 +123,7 @@ export default class App extends React.Component {
           yupStyle={styles.yup}
           noView={<Image source={require('../../assets/images/rejects.png')} style={{ width: 100, height: 100  }}/>}
           nopeStyle={styles.nope}
-          onClickHandler={this.handleOnClick}
+          onClickHandler={this.handlePLay}
           smoothTransition={false}
         />
       </View>

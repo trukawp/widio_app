@@ -9,10 +9,7 @@ export default class NoMoreCards extends Component {
 
   render() {
     return (
-      <View>
-        <Text style={styles.noMoreCardsText}>Brak więcej bajek..</Text>
-        <Text style={styles.noMoreCardsText}>Niedługo dodamy nowe :)</Text>
-      </View>
+      <View/>
     )
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
-import { ScrollView,StyleSheet,View,Image,AsyncStorage,DatePickerIOS,Dimensions,Alert } from 'react-native';
-import { Card,Button,Input,Text } from "react-native-elements";
+import { ScrollView, StyleSheet, View, Image, AsyncStorage, DatePickerIOS, Dimensions, Alert } from 'react-native';
+import { Card, Button, Input, Text, CheckBox } from "react-native-elements";
 import { withFormik } from 'formik';
 import * as yup from 'yup';
 import Dialog from "react-native-dialog";
@@ -37,6 +37,10 @@ class SignUpScreen extends React.Component {
 
   onChangeText = (name) => (text) => {
     this.props.setFieldValue(name, text);
+  }
+
+  checkSex = (name, value) => () => {
+    this.props.setFieldValue(name, value);
   }
 
   render() {
@@ -89,6 +93,23 @@ class SignUpScreen extends React.Component {
               onChangeText={this.onChangeText("name")}
               placeholder="Imię dziecka..."
             />
+            <Text>Płeć dziecka</Text>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around' }}>
+            <CheckBox
+              title="Chłopiec"
+              checked={values.male}
+              onPress={this.checkSex('male', true)}
+              // uncheckedIcon={}
+              // checkedIcon={}
+            />
+            <CheckBox
+              title="Dziewczynka"
+              checked={!values.male}
+              onPress={this.checkSex('male', false)}
+              // uncheckedIcon={}
+              // checkedIcon={}
+            />
+            </View>
             <Button
               buttonStyle={{ marginTop: 20 }}
               backgroundColor="#03A9F4"
@@ -99,7 +120,7 @@ class SignUpScreen extends React.Component {
               buttonStyle={{ marginTop: 20 }}
               backgroundColor="transparent"
               textStyle={{ color: "#bcbec1" }}
-              title="Zaloguj"
+              title="Powrót"
               onPress={() => navigate("SignIn")}
             />
           </Card>
@@ -120,6 +141,7 @@ export default withFormik({
         password: values.password,
         name: values.name,
         birthDate: values.birthDate,
+        male: values.male,
       };
       // console.log('params', params);
 
@@ -148,8 +170,8 @@ export default withFormik({
     email: yup.string().required('Email jest wymagany'),
     password: yup.string().required('Hasło jest wymagane'),
     password_confirmation: yup.string()
-      .oneOf([yup.ref('password'), null], "Passwords don't match")
-      .required('Confirm Password is required'),
+      .oneOf([yup.ref('password'), null], "Podane hasła nie zgadzają się")
+      .required('Potwierdzenie hasła jest wymagane'),
     name: yup.string().required('Imię dziecka jest wymagane'),
   }),
 })(SignUpScreen);

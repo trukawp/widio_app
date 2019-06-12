@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet,Text,View,imgURL,AsyncStorage,Image } from 'react-native';
+import { StyleSheet,Text,View,imgURL,AsyncStorage,Image,Alert } from 'react-native';
 import SwipeCards from 'react-native-swipe-cards';
 import JWT from 'expo-jwt';
 
@@ -66,7 +66,7 @@ export default class App extends React.Component {
         this.setState()
       })
       .catch(error => {
-        console.log(error.response)
+        // console.log(error.response)
         Alert.alert('','Spróbuj dodać film, którego jeszcze nie dodałeś')
       });
   }

@@ -2,7 +2,7 @@ import axios from "axios";
 import { AsyncStorage } from 'react-native';
 
 const apiClient = axios.create({
-  baseURL: 'http://192.168.0.102:8080/api',
+  baseURL: 'http://172.20.10.9:8080/api',
 });
 
 apiClient.interceptors.request.use(

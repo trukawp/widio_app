@@ -21,11 +21,17 @@ export const movie = {
 };
 
 export const movieChosen = {
+  get: (id) => (
+    axios.get(`/movie_chosen/get/${id}`)
+  ),
   update: (data) => (
     axios.post('/movie_chosen/update', data)
   ),
   delete: (id) => (
     axios.delete(`/movie_chosen/${id}`)
+  ),
+  modify: (data) => (
+    axios.put('/movie_chosen/', data)
   ),
 };
 
@@ -65,6 +71,9 @@ export const kid = {
   ),
   findByEmail: (email) => (
     axios.get(`/kid/get/email?email=${email}`)
+  ),
+  modify: (data) => (
+    axios.put('/kid/modify', data)
   ),
 };
 

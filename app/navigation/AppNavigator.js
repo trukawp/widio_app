@@ -17,6 +17,7 @@ import MovieVideoScreen from '../screens/MovieVideoScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
+  Profile: ProfileScreen,
 },{
   navigationOptions: ({ navigation }) => ({
     tabBarVisible: navigation.state.index < 1,
@@ -39,6 +40,7 @@ const HomeStack = createStackNavigator({
 const CategoriesStack = createStackNavigator({
   Categories: CategoriesScreen,
   CategoryHome: CategoryHomeScreen,
+  Profile: ProfileScreen,
 },{
   navigationOptions: ({ navigation }) => ({
     tabBarVisible: navigation.state.index < 1,
@@ -57,6 +59,7 @@ const MoviesChosenStack = createStackNavigator({
   MoviesChosen: MoviesChosenScreen,
   Movie: MovieScreen,
   MovieVideo: MovieVideoScreen,
+  Profile: ProfileScreen,
 },{
   navigationOptions: ({ navigation }) => ({
     tabBarVisible: navigation.state.index < 1,
@@ -75,6 +78,7 @@ const MoviesWatchedStack = createStackNavigator({
   MoviesWatched: MoviesWatchedScreen,
   Movie: MovieScreen,
   MovieVideo: MovieVideoScreen,
+  Profile: ProfileScreen,
 },{
   navigationOptions: ({ navigation }) => ({
     tabBarVisible: navigation.state.index < 1,
@@ -89,29 +93,12 @@ const MoviesWatchedStack = createStackNavigator({
   }),
 });
 
-const ProfileStack = createStackNavigator({
-  Profile: ProfileScreen,
-},{
-  navigationOptions: ({ navigation }) => ({
-    tabBarVisible: navigation.state.index < 1,
-    tabBarLabel: 'PROFIL',
-    tabBarIcon: ({ focused }) => (
-      <TabBarIcon
-        focused={focused}
-        name={Platform.OS === 'ios' ? 'ios-rocket' : 'md-link'}
-        color='#2f95dc'
-      />
-    ),
-  }),
-});
-
 const TabNavigator = createBottomTabNavigator(
   {
     Home: HomeStack,
     Categories: CategoriesStack,
     MovieChosen: MoviesChosenStack,
     MoviesWatched: MoviesWatchedStack,
-    Profile: ProfileStack,
   },
   {
     initialRouteName: 'Home'

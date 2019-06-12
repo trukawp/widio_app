@@ -1,14 +1,16 @@
 import React from 'react';
-import { ScrollView,StyleSheet,View,ImageBackground,Dimensions,TouchableOpacity,Image,StatusBar } from 'react-native';
+import { ScrollView,StyleSheet,View,ImageBackground,Dimensions,TouchableOpacity,Image,StatusBar,AsyncStorage, Alert } from 'react-native';
 import { Card,Button,Text } from 'react-native-elements';
 import { Video } from 'expo';
 import Dialog from "react-native-dialog";
 import { Rating } from 'react-native-ratings';
+import JWT from 'expo-jwt';
 import { movie,movieChosen,movieWatched,kid,media } from '../services/api';
 
 import MovieIcon from '../components/MovieIcon';
 import VideoPlayer from '../components/VideoPlayer/VideoPlayer';
 import MovieImages from '../components/MovieImages/MovieImages';
+import PasswordPrompt from '../components/PasswordPrompt';
 
 export default class MovieScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -32,6 +34,7 @@ export default class MovieScreen extends React.Component {
     super(props);
 
     this.state = {
+      isPasswordPromptVisible: false,
       movie:{},
       pictures:[],
       media:[],
@@ -39,32 +42,88 @@ export default class MovieScreen extends React.Component {
         movie:{},
         kid:{},
         vote: 5,
+        watched: false,
       },
-      kidId: 'e96cd6e4-8f50-4909-a751-73268fda76b0',
       is_watched: this.props.navigation.state.params.is_watched,
       rating_dialog: false,
       delete_dialog: false,
+      movie_chosen:{},
+      _form: {
+        id: '',
+        movie: {},
+        kid: {},
+        vote: 5,
+        watched: false,
+      }
     };
   }
 
-  componentWillMount() {
-    Promise.all([movie.get(this.movieId), kid.get(this.kidId), movie.getMovieMedias(this.movieId)])
-      .then(([responseM,responseK,responseMed]) => {
+  async componentDidMount() {
+    const key ="SecretKeyToGenJWTs";
+    const token = await AsyncStorage.getItem('token');
+    const code = JWT.decode(token, key);
+    this.showStatusBar();
+    this.retrieveData(code.sub);
+    try {
+      if (!this.watchedCheck()) {
+        this.retrieveMovie(this.selectedMovieId);
+      }
+    } catch (error) {
+      if (error.errors) {
+        setErrors({
+          message: error.errors.message,
+        });
+      }
+    }
+  }
+
+  retrieveMovie = (movieChosenId) => {
+    try {
+    movieChosen.get(movieChosenId)
+      .then(response => {
         this.setState({
-          movie: responseM.data,
-          pictures: responseM.data.pictures,
-          media: responseMed.data,
-          ...this.form,
-          form: {
-            movie: responseM.data,
-            kid: responseK.data,
-          },
+          ...this.state,
+          movie_chosen: response.data,
+          _form: {
+            id: response.data.id,
+            movie: response.data.movie,
+            kid: response.data.kid,
+            vote: response.data.vote,
+            watched: response.data.watched
+          }
         })
+      })
+    } catch (error) {
+      console.log('error: ', error)
+    }
+  }
+
+  retrieveData = (email) => {
+    kid.findByEmail(email)
+      .then(response => {
+        this.setState({
+          ...this.state,
+          kid: response.data
+        }),
+        Promise.all([movie.get(this.movieId), kid.get(response.data.id), movie.getMovieMedias(this.movieId)])
+          .then(([responseM,responseK,responseMed]) => {
+            this.setState({
+              movie: responseM.data,
+              pictures: responseM.data.pictures,
+              media: responseMed.data,
+              ...this.form,
+              form: {
+                movie: responseM.data,
+                kid: responseK.data,
+                watched: false,
+              },
+            })
+          })
       })
   }
 
-  componentDidMount() {
-    this.showStatusBar();
+  _onRefresh = () => {
+    this.retrieveData(this.state.kid.email);
   }
 
   deleteMovieChosen = async (selectedMovieId) => {
@@ -77,40 +136,38 @@ export default class MovieScreen extends React.Component {
     await movieWatched.delete(selectedMovieId);
   }
 
-  isWatched(form) {
+  isWatched(form, _form) {
     movieWatched.update(form)
       .then(() => {
         this.setState({
+          ...this.state,
           rating_dialog: false,
-        },() => {
-          this.deleteMovieChosen(this.selectedMovieId)
         }
       )})
       .catch(error => {
-        console.log(error.response)
-        alert("Nie można dodać filmu.")
+        console.log(error.response);
+        Alert.alert (
+          '',
+          'Nie można ocenić filmu, prawdopodobnie został już oceniony',
+          [{text: 'OK', onPress: () => console.log('ok..')}]
+        );
       });
+    movieChosen.modify(_form);
   }
-
-  // rateMovie(form) {
-  //   console.log('film', form.movie.title);
-  //   console.log('dziecko', form.kid.name);
-  //   console.log('ocena', form.vote);
-  // }
-
 
   get movieId() {
     const { params } = this.props.navigation.state;
     return params.movie.movie.id;
   }
 
-  get kidId() {
-    return this.state.kidId;
-  }
-
   get selectedMovieId() {
     const { params } = this.props.navigation.state;
     return params.movie.id;
+  }
+
+  watchedCheck() {
+    const { params } = this.props.navigation.state;
+    return params.is_watched;
   }
 
   onCancel = () => {
@@ -143,28 +200,46 @@ export default class MovieScreen extends React.Component {
 
   ratingCompleted = (rating) => {
     this.setState({
-      form: { ...this.state.form, vote: rating },
+      form: { ...this.state.form, vote: rating, watched: true },
+      _form: { ...this.state._form, vote: rating, watched: true },
     });
+    console.log('ocena form',this.state.form.vote),
+    console.log('ocena _form',this.state._form.vote)
   }
 
   submit = () => {
-    this.isWatched(this.state.form);
+    this.isWatched(this.state.form, this.state._form);
   }
 
   showStatusBar() {
     StatusBar.setHidden(false);
   }
 
-  renderVideo = () => {
-    this.props.navigation.navigate("MovieVideo", {showStatusBar: this.showStatusBar.bind(this) })
+  isEmpty = (str) => {
+    return (!str || 0 === str.length);
   }
 
+  _togglePromptVisibility = () => {
+    this.setState({
+      isPasswordPromptVisible: !this.state.isPasswordPromptVisible,
+    });
+  }
+
+  _onPromptOk = () => {
+    this.props.navigation.navigate("MovieVideo", {showStatusBar: this.showStatusBar.bind(this) })
+    this._togglePromptVisibility();
+  }
 
   render() {
-    console.log()
+    console.log(this.state.movie_chosen)
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.3}}>
         <ScrollView>
+        <PasswordPrompt
+          isVisible={this.state.isPasswordPromptVisible}
+          onCancel={this._togglePromptVisibility}
+          onOk={this._onPromptOk}
+        />
         <View style={styles.container}>
           <MovieImages pictures={this.state.pictures} />
         </View>
@@ -173,7 +248,7 @@ export default class MovieScreen extends React.Component {
             <TouchableOpacity onPress={() => {this.showDeleteDialog()}}>
               <MovieIcon name='ios-close-circle' color='black' size={50} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={this.renderVideo}>
+            <TouchableOpacity onPress={this._togglePromptVisibility}>
               <MovieIcon name='ios-play-circle' color='red' size={70} />
             </TouchableOpacity>
             <Text style={{ fontSize: 35 }}>
@@ -191,12 +266,18 @@ export default class MovieScreen extends React.Component {
             <TouchableOpacity onPress={() => {this.showDeleteDialog()}}>
               <MovieIcon name='ios-heart-dislike' color='black' size={50} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={this.renderVideo}>
+            <TouchableOpacity onPress={this._togglePromptVisibility}>
               <MovieIcon name='ios-play-circle' color='red' size={70} />
             </TouchableOpacity>
+            { !this.state.movie_chosen.watched?
             <TouchableOpacity onPress={() => {this.showRatingDialog()}}>
               <MovieIcon name='ios-star-outline' color='gold' size={50} />
             </TouchableOpacity>
+            :
+            <Text style={{ fontSize: 35 }}>
+              {this.props.navigation.state.params.movie.vote}<MovieIcon name='ios-star' color='gold' size={40} />
+            </Text>
+            }
             <Dialog.Container visible={this.state.rating_dialog} onBackdropPress={this.onCancel}>
               <Dialog.Title>Oceń bajkę</Dialog.Title>
               <Rating
@@ -221,13 +302,17 @@ export default class MovieScreen extends React.Component {
           }
           <Text style={{alignSelf: 'center', fontSize: 25, fontWeight: 'bold'}}>{this.state.movie.title}</Text>
           <Text style={{margin: 10, textAlign: 'justify', fontSize: 20 }}>{this.state.movie.description}</Text>
-          <Text style={{marginLeft: 10, fontSize: 20, fontWeight: 'bold'}}>Dostępne również na:</Text>
-          <View style={{ flex:1, flexDirection: 'row', margin: 10, justifyContent: 'space-around', flexWrap: 'wrap'}}>
-            { this.state.media.map(media =>
-              <Image source={{uri: media.media.imgURL}} style={{height: 60, width: 120}} key={media.media.id} resizeMode='contain'/>
-              )
-            }
-          </View>
+          { !this.isEmpty(this.state.media) ?
+          <View>
+            <Text style={{marginLeft: 10, fontSize: 20, fontWeight: 'bold'}}>Dostępne również na:</Text>
+              <View style={{ flex:1, flexDirection: 'row', margin: 10, justifyContent: 'space-around', flexWrap: 'wrap'}}>
+                { this.state.media.map(media =>
+                  <Image source={{uri: media.media.imgURL}} style={{height: 60, width: 120}} key={media.media.id} resizeMode='contain'/>
+                  )
+                }
+              </View>
+          </View> : <View />
+        }
         </ScrollView>
       </ImageBackground>
     );

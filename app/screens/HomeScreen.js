@@ -1,25 +1,36 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { ScrollView,StyleSheet,Text,View,ImageBackground,Button,TouchableOpacity,Image,AsyncStorage } from 'react-native';
-import { WebBrowser } from 'expo';
+import { WebBrowser, Audio } from 'expo';
 import JWT from 'expo-jwt';
+import { NavigationEvents } from 'react-navigation';
 
 import { movie,movieChosen,kid } from '../services/api';
 import SwipeCards from '../components/SwipeCards/SwipeCards.js';
 import HeaderIcon from '../components/HeaderIcon';
+import PasswordPrompt from '../components/PasswordPrompt';
 
 
-export default class HomeScreen extends React.Component {
-  static navigationOptions = {
-    headerStyle: {
-      backgroundColor: '#343E7A',
-    },
-    headerRight: <HeaderIcon name='ios-lock' />,
-    title: 'Widio',
-    headerTintColor: '#FAE99E',
-    headerTitleStyle: {
-      fontFamily: 'lilitaone-regular',
-      fontSize: 25,
-    },
+export default class HomeScreen extends PureComponent {
+  static navigationOptions = ({ navigation }) => {
+    const openProfile = () => navigation.state.params.openProfile();
+
+    return {
+      headerStyle: {
+        backgroundColor: '#343E7A',
+      },
+      headerRight: (
+        <HeaderIcon
+          name='ios-settings'
+          onPress={openProfile}
+        />
+      ),
+      title: 'Widio',
+      headerTintColor: '#FAE99E',
+      headerTitleStyle: {
+        fontFamily: 'lilitaone-regular',
+        fontSize: 27,
+      },
+    }
   }
 
   constructor(props) {
@@ -28,6 +39,12 @@ export default class HomeScreen extends React.Component {
     this.state = {
       token: {},
     };
+  }
+
+  componentDidMount() {
+    this.props.navigation.setParams({
+      openProfile: this._togglePromptVisibility,
+    });
   }
 
   // componentDidMount() {
@@ -63,15 +80,45 @@ export default class HomeScreen extends React.Component {
 //   }
 // };
 
+  _togglePromptVisibility = () => {
+    this.setState({
+      isPasswordPromptVisible: !this.state.isPasswordPromptVisible,
+    });
+  }
+
+  _onPromptOk = () => {
+    this.props.navigation.navigate('Profile');
+    this._togglePromptVisibility();
+  }
+
+  handlePLay = async () => {
+    const soundObject = new Audio.Sound();
+      try {
+        await soundObject.loadAsync(require('../assets/audio/button_click.mp3'));
+        await soundObject.playAsync();
+        // Your sound is playing!
+      } catch (error) {
+        // An error occurred!
+      }
+  }
+
   render() {
     // console.log(this.state.token)
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.3}}>
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <SwipeCards style={{flex: 1}} navigation={this.props.navigation} />
-        </ScrollView>
-      </View>
+        <NavigationEvents
+          onWillFocus={this.handlePLay}
+        />
+        <PasswordPrompt
+          isVisible={this.state.isPasswordPromptVisible}
+          onCancel={this._togglePromptVisibility}
+          onOk={this._onPromptOk}
+        />
+        <View style={styles.container}>
+          <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+            <SwipeCards style={{flex: 1}} navigation={this.props.navigation} />
+          </ScrollView>
+        </View>
       </ImageBackground>
     );
   }

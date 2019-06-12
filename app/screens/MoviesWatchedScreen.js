@@ -3,23 +3,34 @@ import { ScrollView,StyleSheet,Text,View,ImageBackground,TouchableOpacity,Refres
 import { Rating } from 'react-native-ratings';
 import { NavigationEvents } from 'react-navigation';
 import JWT from 'expo-jwt';
+import { Audio } from 'expo';
 
 import { kid } from '../services/api';
 import ListCards from '../components/ListCards/ListCards.js';
 import HeaderIcon from '../components/HeaderIcon';
+import PasswordPrompt from '../components/PasswordPrompt';
 
 export default class MoviesWatchedScreen extends React.Component {
-  static navigationOptions = {
-    headerStyle: {
-      backgroundColor: '#343E7A',
-    },
-    headerRight: <HeaderIcon name='ios-lock' />,
-    title: 'Widio',
-    headerTintColor: '#FAE99E',
-    headerTitleStyle: {
-      fontFamily: 'lilitaone-regular',
-      fontSize: 25,
-    },
+  static navigationOptions = ({ navigation }) => {
+    const openProfile = () => navigation.state.params.openProfile();
+
+    return {
+      headerStyle: {
+        backgroundColor: '#343E7A',
+      },
+      headerRight: (
+        <HeaderIcon
+          name='ios-settings'
+          onPress={openProfile}
+        />
+      ),
+      title: 'Widio',
+      headerTintColor: '#FAE99E',
+      headerTitleStyle: {
+        fontFamily: 'lilitaone-regular',
+        fontSize: 27,
+      },
+    }
   }
 
   constructor(props) {
@@ -46,6 +57,9 @@ export default class MoviesWatchedScreen extends React.Component {
   // }
 
   componentDidMount() {
+    this.props.navigation.setParams({
+      openProfile: this._togglePromptVisibility,
+    });
     const key ="SecretKeyToGenJWTs";
     const jwttoken = AsyncStorage.getItem('token', (err, result) => {
       const code = (JWT.decode(result, key));
@@ -70,9 +84,9 @@ export default class MoviesWatchedScreen extends React.Component {
       })
   }
 
-  // ratingCompleted(rating) {
-  //   console.log("Rating is: " + rating)
-  // }
+  ratingCompleted(rating) {
+    console.log("Rating is: " + rating)
+  }
 
   _onRefresh = () => {
     this.setState({refreshing: true});
@@ -97,8 +111,34 @@ export default class MoviesWatchedScreen extends React.Component {
     return this.state.kid.id;
   }
 
+  _togglePromptVisibility = () => {
+    this.setState({
+      isPasswordPromptVisible: !this.state.isPasswordPromptVisible,
+    });
+  }
+
+  _onPromptOk = () => {
+    this.props.navigation.navigate('Profile');
+    this._togglePromptVisibility();
+  }
+
   _onPressButton = (movie, movieTitle, movieVote) => {
     this.props.navigation.navigate("Movie", {movie: movie, movieTitle: movieTitle, navigation: this.props.navigation, is_watched: true, movieVote: movieVote})
+  }
+
+  isEmpty = (str) => {
+    return (!str || 0 === str.length);
+  }
+
+  handlePLay = async () => {
+    const soundObject = new Audio.Sound();
+      try {
+        await soundObject.loadAsync(require('../assets/audio/button_click.mp3'));
+        await soundObject.playAsync();
+        // Your sound is playing!
+      } catch (error) {
+        // An error occurred!
+      }
   }
 
   render() {
@@ -107,9 +147,15 @@ export default class MoviesWatchedScreen extends React.Component {
       <NavigationEvents
         onWillFocus={this._onRefresh}
       />
+      <PasswordPrompt
+        isVisible={this.state.isPasswordPromptVisible}
+        onCancel={this._togglePromptVisibility}
+        onOk={this._onPromptOk}
+      />
       <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
+        { !this.isEmpty(this.state.movies) ?
         <View style={styles.container}>
-          {this.state.movies.map(movie =>
+        {this.state.movies.map(movie =>
           <View key={movie.movie.id}>
             <TouchableOpacity onPress={this._onPressButton.bind(this, movie, movie.movie.title, movie.movie.vote)} key={movie.movie.id}>
               <ListCards name={movie.movie.title} imgURL={movie.movie.imgURL} />
@@ -129,6 +175,9 @@ export default class MoviesWatchedScreen extends React.Component {
           </View>
           )}
         </View>
+      :
+        <View style={styles.container2}><Text style={{ fontSize: 20, marginTop: 50 }}>Oceń wybrane bajki, aby wyświetlić listę</Text></View>
+      }
       </ScrollView>
       </ImageBackground>
     );
@@ -144,6 +193,12 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     paddingRight: 20,
     paddingLeft: 20,
+  },
+  container2: {
+    flex: 1,
+    flexDirection:'row', 
+    justifyContent: 'center',
+    alignItems: 'center', 
   },
   stars: {
     marginBottom: 10,
