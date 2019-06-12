@@ -43,25 +43,25 @@ export default class App extends React.Component {
       )
   }
 
-  handlePLay = async () => {
+  handlePlay = async () => {
     const soundObject = new Audio.Sound();
       try {
-        await soundObject.loadAsync(require('../../assets/audio/button_click.mp3'));
+        await soundObject.loadAsync(require('../../assets/audio/swipe.mp3'));
         await soundObject.playAsync();
         // Your sound is playing!
       } catch (error) {
         // An error occurred!
       }
+  }
     // movieChosen.update(this.state.form)
     //   .then(() => {
     //     this.setState(),
-    //     this.handlePLay;
+    //     this.handlePlay;
     //   })
     //   .catch(error => {
     //     // console.log(error.response)
     //     Alert.alert('','Spróbuj dodać film, którego jeszcze nie dodałeś')
     //   });
-  }
 
   handleYup (kid, watched, movie) {
     return this.setState({ form: {
@@ -70,9 +70,13 @@ export default class App extends React.Component {
       watched: watched,
       movie: movie,
     }}, () => {
-      this.handleOnSwipe();
+      this.swipeAndSound();
       }
     );
+  }
+
+  handleNope (card) {
+    this.handlePlay();
   }
 
   handleOnSwipe () {
@@ -102,6 +106,10 @@ export default class App extends React.Component {
 
   }
 
+  swipeAndSound () {
+    this.handlePlay();
+    this.handleOnSwipe();
+  }
 
   renderCard = (data) => {
     return <Card {...data} />
@@ -115,7 +123,7 @@ export default class App extends React.Component {
           loop={true}
           renderCard={this.renderCard}
           renderNoMoreCards={() => <NoMoreCards />}
-          // handleNope={this.handlePLay}
+          handleNope={this.handleNope.bind(this)}
           // handleYup={this.handleYup}
           handleYup={this.handleYup.bind(this, this.state.form.kid, this.state.form.watched)}
           key={this.state.movies.id}
@@ -123,7 +131,7 @@ export default class App extends React.Component {
           yupStyle={styles.yup}
           noView={<Image source={require('../../assets/images/rejects.png')} style={{ width: 100, height: 100  }}/>}
           nopeStyle={styles.nope}
-          onClickHandler={this.handlePLay}
+          onClickHandler={this.handlePlay}
           smoothTransition={false}
         />
       </View>

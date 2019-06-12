@@ -35,14 +35,15 @@ export default class MovieScreen extends React.Component {
 
     this.state = {
       isPasswordPromptVisible: false,
+      kid:{},
       movie:{},
       pictures:[],
       media:[],
+      watched_star: true,
       form: {
         movie:{},
         kid:{},
         vote: 5,
-        watched: false,
       },
       is_watched: this.props.navigation.state.params.is_watched,
       rating_dialog: false,
@@ -116,14 +117,11 @@ export default class MovieScreen extends React.Component {
                 movie: responseM.data,
                 kid: responseK.data,
                 watched: false,
+                vote: 3,
               },
             })
           })
       })
-  }
-
-  _onRefresh = () => {
-    this.retrieveData(this.state.kid.email);
   }
 
   deleteMovieChosen = async (selectedMovieId) => {
@@ -200,15 +198,17 @@ export default class MovieScreen extends React.Component {
 
   ratingCompleted = (rating) => {
     this.setState({
-      form: { ...this.state.form, vote: rating, watched: true },
+      form: { ...this.state.form, vote: rating },
       _form: { ...this.state._form, vote: rating, watched: true },
+
     });
-    console.log('ocena form',this.state.form.vote),
-    console.log('ocena _form',this.state._form.vote)
   }
 
   submit = () => {
     this.isWatched(this.state.form, this.state._form);
+    this.setState({
+      watched_star: false,
+    });
   }
 
   showStatusBar() {
@@ -231,7 +231,6 @@ export default class MovieScreen extends React.Component {
   }
 
   render() {
-    console.log(this.state.movie_chosen)
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.3}}>
         <ScrollView>
@@ -269,13 +268,13 @@ export default class MovieScreen extends React.Component {
             <TouchableOpacity onPress={this._togglePromptVisibility}>
               <MovieIcon name='ios-play-circle' color='red' size={70} />
             </TouchableOpacity>
-            { !this.state.movie_chosen.watched?
+            { !this.state.movie_chosen.watched != !this.state.watched_star ?
             <TouchableOpacity onPress={() => {this.showRatingDialog()}}>
               <MovieIcon name='ios-star-outline' color='gold' size={50} />
             </TouchableOpacity>
             :
             <Text style={{ fontSize: 35 }}>
-              {this.props.navigation.state.params.movie.vote}<MovieIcon name='ios-star' color='gold' size={40} />
+              <MovieIcon name='ios-star' color='gold' size={56} />
             </Text>
             }
             <Dialog.Container visible={this.state.rating_dialog} onBackdropPress={this.onCancel}>

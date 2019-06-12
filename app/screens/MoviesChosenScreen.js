@@ -37,9 +37,8 @@ export default class MoviesChosenScreen extends PureComponent {
 
     this.state = {
       movies: [],
-      kid: {
-
-      },
+      movies_sorted: [],
+      kid: {},
       refreshing: false,
     };
   }
@@ -55,6 +54,15 @@ export default class MoviesChosenScreen extends PureComponent {
     });
   }
 
+  sortByName() {
+    const {movies} = this.state
+    let newMovies = movies
+    newMovies = movies.sort((a, b) => a.title > b.title)
+    this.setState({
+      movies_sorted: newMovies
+    })
+  }
+
   retrieveData = async (email) => {
     this.setState({ refreshing: true });
 
@@ -67,6 +75,7 @@ export default class MoviesChosenScreen extends PureComponent {
         movies: choicesResponse.data,
         refreshing: false,
       });
+      this.sortByName();
     } catch (e) {
       this.setState({ refreshing: false });
     }
@@ -110,11 +119,16 @@ export default class MoviesChosenScreen extends PureComponent {
       }
   }
 
+  playAndRefresh = () => {
+    this._onRefresh();
+    this.handlePLay();
+  }
+
   render() {
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.3}}>
       <NavigationEvents
-        onWillFocus={this._onRefresh}
+        onWillFocus={this.playAndRefresh}
       />
       <PasswordPrompt
         isVisible={this.state.isPasswordPromptVisible}
@@ -124,7 +138,7 @@ export default class MoviesChosenScreen extends PureComponent {
       <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
       { !this.isEmpty(this.state.movies) ?
         <View style={styles.container}>
-          {this.state.movies.map(movie => 
+          {this.state.movies_sorted.map(movie => 
             <View key={movie.movie.id}>
               <TouchableOpacity onPress={this._onPressButton.bind(this, movie, movie.movie.title)} key={movie.movie.id}>
                 <ListCards name={movie.movie.title} imgURL={movie.movie.imgURL} />

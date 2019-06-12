@@ -38,9 +38,19 @@ export default class MoviesWatchedScreen extends React.Component {
 
     this.state = {
       movies: [],
+      movies_sorted: [],
       kid: {},
       refreshing: false,
     };
+  }
+
+  sortByName() {
+    const {movies} = this.state
+    let newMovies = movies
+    newMovies = movies.sort((a, b) => a.title < b.title)
+    this.setState({
+      movies_sorted: newMovies
+    })
   }
 
   // componentDidMount() {
@@ -67,21 +77,22 @@ export default class MoviesWatchedScreen extends React.Component {
     });
   }
 
-  retrieveData(email) {
-    kid.findByEmail(email)
-      .then(response => {
-        this.setState({
-          ...this.state,
-          kid: response.data
-        }),
-        kid.getKidWatched(response.data.id)
-          .then(responseM => {
-            this.setState({
-              ...this.state,
-              movies: responseM.data
-            })
-          })
-      })
+  retrieveData = async (email) => {
+    this.setState({ refreshing: true });
+
+    try {
+      const kidResponse = await kid.findByEmail(email);
+      const watchedResponse = await kid.getKidWatched(kidResponse.data.id);
+
+      this.setState({
+        kid: kidResponse.data,
+        movies: watchedResponse.data,
+        refreshing: false,
+      });
+      this.sortByName();
+    } catch (e) {
+      this.setState({ refreshing: false });
+    }
   }
 
   ratingCompleted(rating) {
@@ -89,22 +100,7 @@ export default class MoviesWatchedScreen extends React.Component {
   }
 
   _onRefresh = () => {
-    this.setState({refreshing: true});
-    kid.getKidWatched(this.kidId)
-    .then(response => {
-      this.setState({
-        ...this.state,
-        movies: response.data,
-        refreshing: false
-      })
-    })
-    .catch(error => {
-      // console.log(error.response);
-      this.setState({
-        ...this.state,
-        refreshing: false
-      })
-    })
+    this.retrieveData(this.state.kid.email);
   }
 
   get kidId() {
@@ -141,11 +137,16 @@ export default class MoviesWatchedScreen extends React.Component {
       }
   }
 
+  playAndRefresh = () => {
+    this._onRefresh();
+    this.handlePLay();
+  }
+
   render() {
     return (
       <ImageBackground source={require('../assets/images/app_background.jpg')} style={styles.backgroundImage} imageStyle={{opacity: 0.3}}>
       <NavigationEvents
-        onWillFocus={this._onRefresh}
+        onWillFocus={this.playAndRefresh}
       />
       <PasswordPrompt
         isVisible={this.state.isPasswordPromptVisible}
@@ -155,7 +156,7 @@ export default class MoviesWatchedScreen extends React.Component {
       <ScrollView refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this._onRefresh}/>}>
         { !this.isEmpty(this.state.movies) ?
         <View style={styles.container}>
-        {this.state.movies.map(movie =>
+        {this.state.movies_sorted.map(movie =>
           <View key={movie.movie.id}>
             <TouchableOpacity onPress={this._onPressButton.bind(this, movie, movie.movie.title, movie.movie.vote)} key={movie.movie.id}>
               <ListCards name={movie.movie.title} imgURL={movie.movie.imgURL} />
