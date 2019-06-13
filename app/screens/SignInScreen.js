@@ -21,7 +21,7 @@ class SignInScreen extends React.Component {
 
   render() {
     const { handleChange, handleSubmit, errors, values } = this.props;
-    const {navigate} = this.props.navigation;
+    const { navigate } = this.props.navigation;
     
     return (
       <ScrollView style={styles.container}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView,StyleSheet,View,ImageBackground,Dimensions,TouchableOpacity,Image,StatusBar,AsyncStorage, Alert } from 'react-native';
+import { ScrollView,StyleSheet,View,ImageBackground,Dimensions,TouchableOpacity,Image,StatusBar,AsyncStorage,Alert,Linking } from 'react-native';
 import { Card,Button,Text } from 'react-native-elements';
 import { Video } from 'expo';
 import Dialog from "react-native-dialog";
@@ -35,6 +35,7 @@ export default class MovieScreen extends React.Component {
 
     this.state = {
       isPasswordPromptVisible: false,
+      isPasswordPromptVisible2: false,
       kid:{},
       movie:{},
       pictures:[],
@@ -225,9 +226,20 @@ export default class MovieScreen extends React.Component {
     });
   }
 
+  _togglePromptVisibility2 = () => {
+    this.setState({
+      isPasswordPromptVisible2: !this.state.isPasswordPromptVisible2,
+    });
+  }
+
   _onPromptOk = () => {
     this.props.navigation.navigate("MovieVideo", {showStatusBar: this.showStatusBar.bind(this) })
     this._togglePromptVisibility();
+  }
+
+  _onPromptOk2 = () => {
+    Linking.openURL('https://hbogo.pl')
+    this._togglePromptVisibility2();
   }
 
   render() {
@@ -238,6 +250,11 @@ export default class MovieScreen extends React.Component {
           isVisible={this.state.isPasswordPromptVisible}
           onCancel={this._togglePromptVisibility}
           onOk={this._onPromptOk}
+        />
+        <PasswordPrompt
+          isVisible={this.state.isPasswordPromptVisible2}
+          onCancel={this._togglePromptVisibility2}
+          onOk={this._onPromptOk2}
         />
         <View style={styles.container}>
           <MovieImages pictures={this.state.pictures} />
@@ -306,7 +323,9 @@ export default class MovieScreen extends React.Component {
             <Text style={{marginLeft: 10, fontSize: 20, fontWeight: 'bold'}}>Dostępne również na:</Text>
               <View style={{ flex:1, flexDirection: 'row', margin: 10, justifyContent: 'space-around', flexWrap: 'wrap'}}>
                 { this.state.media.map(media =>
-                  <Image source={{uri: media.media.imgURL}} style={{height: 60, width: 120}} key={media.media.id} resizeMode='contain'/>
+                  <TouchableOpacity key={media.media.id} onPress={this._togglePromptVisibility2}>
+                    <Image source={{uri: media.media.imgURL}} style={{height: 60, width: 120}} resizeMode='contain'/>
+                  </TouchableOpacity>
                   )
                 }
               </View>

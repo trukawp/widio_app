@@ -31,7 +31,7 @@ export const movieChosen = {
     axios.delete(`/movie_chosen/${id}`)
   ),
   modify: (data) => (
-    axios.put('/movie_chosen/', data)
+    axios.put('/movie_chosen/modify', data)
   ),
 };
 
@@ -72,8 +72,11 @@ export const kid = {
   findByEmail: (email) => (
     axios.get(`/kid/get/email?email=${email}`)
   ),
-  modify: (data) => (
-    axios.put('/kid/modify', data)
+  modifyEmail: (data) => (
+    axios.put('/kid/modify_email', data)
+  ),
+  modifyPassword: (data) => (
+    axios.put('/kid/modify_password', data)
   ),
 };
 
